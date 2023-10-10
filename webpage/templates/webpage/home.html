@@ -1,0 +1,11 @@
+{%  extends 'webpage/base.html' %}
+
+{% block content %}
+    <div class='page'>
+        <a href="{% url 'beer_list' %}" class="button1">Beer Ranking</a>
+        <br/>
+        {% if user.is_authenticated %}
+            <a href="{% url 'beer_list' %}" class="button1">Review to approve</a>
+        {% endif %}
+    </div>
+{% endblock %}

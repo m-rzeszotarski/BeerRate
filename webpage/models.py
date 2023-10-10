@@ -5,11 +5,13 @@ from django.utils import timezone
 class Beer(models.Model):
 
     author = models.CharField(max_length=25)
-    date = models.DateField(default=timezone.now)
+    published_date = models.DateField(default=timezone.now)
     brewery = models.CharField(max_length=25)
     name = models.CharField(max_length=30)
     type = models.CharField(max_length=25)
     style = models.CharField(max_length=25)
+    alcohol_content = models.CharField(max_length=25)
+    blg = models.CharField(max_length=25)
     isapproved = models.BooleanField(default=False)
 
     def approve(self):
