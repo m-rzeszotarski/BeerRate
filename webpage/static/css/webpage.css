@@ -1,0 +1,137 @@
+.page-header {
+    background-color: #e6571f;
+    margin-top: 0;
+    padding: 20px 20px 20px 40px;
+    font-family: 'Lobster', cursive;
+}
+
+body {
+    background-color: rgb(247, 230, 224);
+}
+
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: #ffffff;
+    font-size: 36pt;
+    text-decoration: none;
+}
+
+.content {
+    margin-left: 40px;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Lobster', cursive;
+}
+
+.date {
+    color: #828282;
+}
+
+.save {
+    float: right;
+}
+
+.beer-form textarea, .beer-form input {
+    width: 100%;
+}
+
+.top-menu, .top-menu:hover, .top-menu:visited {
+    color: #ffffff;
+    float: right;
+    font-size: 26pt;
+    margin-right: 20px;
+}
+
+a.button1{
+    display:inline-block;
+    padding:0.3em 1.2em;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration: cornsilk;
+    font-family:'Lobster';
+    font-size: x-large;
+    font-weight:300;
+    color:#FFFFFF;
+    background-color:#e6571f;
+    text-align:center;
+    transition: all 0.2s;
+    width: 40%;
+
+}
+
+a.button1:hover{
+    background-color:#dd3f00;
+}
+@media all and (max-width:30em){
+    a.button1{
+        display:block;
+        margin:0.2em auto;
+    }
+}
+
+a.button2{
+    display:inline-block;
+    padding:0.3em 1.2em;
+    margin:0.5em 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:cornsilk;
+    font-family:'Lobster';
+    font-size: medium;
+    font-weight:300;
+    color:#FFFFFF;
+    background-color:#e6571f;
+    text-align:center;
+    transition: all 0.2s;
+    }
+a.button2:hover{
+    background-color:#dd3f00;
+}
+@media all and (max-width:30em){
+    a.button2{
+        display:block;
+        margin:0.2em auto;
+    }
+}
+
+.button2{
+    display:inline-block;
+    padding:0.3em 1.2em;
+    margin:0.5em 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:cornsilk;
+    font-family:'Lobster';
+    font-size: medium;
+    font-weight:300;
+    color:#FFFFFF;
+    background-color:#e6571f;
+    text-align:center;
+    transition: all 0.2s;
+    }
+.button2:hover{
+    background-color:#dd3f00;
+}
+@media all and (max-width:30em){
+    .button2{
+        display:block;
+        margin:0.2em auto;
+    }
+}
+
+.form50 {
+    width: 50%;
+}
+
+.form10 {
+    width: 20%;
+}
+
+.page {
+    margin-bottom: 70px;
+}
+
+.page h2 a, .page h1 a:visited {
+    color: #000000;
+}

@@ -1,0 +1,58 @@
+<html>
+<head>
+    {% load static %}
+    <tittle>Beer Rate</tittle>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'css/strona.css' %}">
+    <link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.11.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.11.1/datatables.min.js"></script>
+    <script type = "text/javascript">
+        $(document).ready(function(){
+            $('#table').DataTable( {
+                "language": {
+                    "decimal":        "",
+                    "emptyTable":     "Empty table",
+                    "info":           "Shown _START_ - _END_ from _TOTAL_ results",
+                    "infoEmpty":      "Shown 0 - 0 from 0 results",
+                    "infoFiltered":   "(from _MAX_ results in base)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Show _MENU_ results",
+                    "loadingRecords": "Loading...",
+                    "processing":     "Processing...",
+                    "search":         "Search:",
+                    "zeroRecords":    "No items found.",
+                    "paginate": {
+                        "first":      "First",
+                        "last":       "Last",
+                        "next":       "Next",
+                        "previous":   "Previous"
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class='page-header'>
+        {% if user.is_authenticated %}
+            <div class="top-menu">
+                <p style="font-family:'Lobster'">Hello {{ user.username }} <small>(<a href="{% url 'logout' %}">Logout</a>)</small></p>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock"></span></a>
+        {% endif %}
+        <h1><a href="/">Beer Rate</a></h1>
+    </div>
+    <div class="content container">
+        <div class="row">
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+    </div>
+</body>
+</html>
