@@ -1,0 +1,24 @@
+{% extends 'webpage/base.html' %}
+
+{% block content %}
+    <div class="page">
+        {% if beer.published_date %}
+            <div class="date">
+                {{ post.published_date }}
+            </div>
+        {% endif %}
+        {% if user.is_authenticated %}
+            <a class="btn btn-default" href="{% url 'beer_edit' pk=beer.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a class="btn btn-default" href="{% url 'beer_remove' pk=beer.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+        {% endif %}
+        <h2>{{ beer.brewery }}: {{ beer.name }}</h2>
+        <p><b>Author:</b> {{ beer.author }}</p>
+        <p><b>Type:</b> {{ beer.type }}</p>
+        <p><b>Style:</b> {{ beer.style }}</p>
+        <p><b>Alcohol [%]:</b> {{ beer.alcohol_content }}</p>
+        <p><b>BLG</b> {{ beer.blg }}</p>
+        <p><b>Rating</b> {{ beer.rating }}</p>
+        <p><a href="{% url 'beer_list' %}" class="button2">Go back to the beer ranking</a></p>
+        <br/>
+    </div>
+{% endblock %}
