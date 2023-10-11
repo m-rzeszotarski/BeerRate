@@ -4,7 +4,12 @@
     <div class='page'>
         <a href="{% url 'beer_list' %}" class="button1">Beer Ranking</a>
         <br/>
+        <a href="https://pl.linkedin.com/in/michal-rzeszotarski" class="button1">About me</a>
+        <br/>
         {% if user.is_authenticated %}
+            <br/>
+            <br/>
+            <br/>
             <a href="{% url 'beer_list' %}" class="button1">Review to approve</a>
         {% endif %}
     </div>

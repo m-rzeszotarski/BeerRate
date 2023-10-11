@@ -10,8 +10,9 @@ class Beer(models.Model):
     name = models.CharField(max_length=30)
     type = models.CharField(max_length=25)
     style = models.CharField(max_length=25)
-    alcohol_content = models.CharField(max_length=25)
-    blg = models.CharField(max_length=25)
+    alcohol_content = models.FloatField(default=0)
+    blg = models.FloatField(default=0)
+    rating = models.FloatField(default=0)
     isapproved = models.BooleanField(default=False)
 
     def approve(self):

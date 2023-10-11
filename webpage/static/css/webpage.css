@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: rgb(247, 230, 224);
+    background-color: rgb(255, 255, 255);
 }
 
 .page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
@@ -40,6 +40,14 @@ h1, h2, h3, h4 {
     float: right;
     font-size: 26pt;
     margin-right: 20px;
+}
+
+.page {
+    margin-bottom: 70px;
+}
+
+.page h2 a, .page h1 a:visited {
+    color: #000000;
 }
 
 a.button1{
@@ -126,12 +134,4 @@ a.button2:hover{
 
 .form10 {
     width: 20%;
-}
-
-.page {
-    margin-bottom: 70px;
-}
-
-.page h2 a, .page h1 a:visited {
-    color: #000000;
 }
