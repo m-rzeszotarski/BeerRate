@@ -1,0 +1,18 @@
+{% extends 'webpage/base.html' %}
+
+{% block content %}
+{% for beer in beers %}
+        {% if not beer.isapproved %}
+            <div class="page">
+                <a class="btn btn-default" href="{% url 'beer_remove' pk=beer.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+                <a class="btn btn-default" href="{% url 'beer_approve' pk=beer.pk %}"><span class="glyphicon glyphicon-ok"></span></a>
+                <h3><a href="{% url 'beer_detail' pk=beer.pk %}">{{ beer.brewery }} - {{ beer.name }}</a></h3>
+                <p><b>Author:</b> {{ beer.author }}</p>
+                <p><b>Type:</b> {{ beer.style }}</p>
+                <p><b>Alcohol [%]:</b> {{ beer.alcohol_content }}</p>
+                <p><b>BLG</b> {{ beer.blg }}</p>
+                <br/>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

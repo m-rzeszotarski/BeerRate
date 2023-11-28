@@ -6,13 +6,10 @@
         <thead>
             <tr style="background-color: #e6571f; font-family: Helvetica; color: antiquewhite;">
                 <th>Brewery</th>
-                <th>Name</th>
-                <th>Type</th>
+                <th>Name</th>>
                 <th>Style</th>
                 <th>Alcohol [%]</th>
                 <th>BLG</th>
-                <th>Rating</th>
-                <th>Author</th>
             </tr>
         </thead>
         <tbody>
@@ -21,12 +18,9 @@
                     <tr style="font-family: Helvetica; text-align: center;">
                         <td>{{ beer.brewery }}</td>
                         <td><a href="{% url 'beer_detail' pk=beer.pk %}">{{ beer.name }}</a></td>
-                        <td>{{ beer.type }}</td>
                         <td>{{ beer.style }}</td>
                         <td>{{ beer.alcohol_content }}</td>
                         <td>{{ beer.blg}}</td>
-                        <td>{{ beer.rating }}</td>
-                        <td>{{ beer.rating }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}
