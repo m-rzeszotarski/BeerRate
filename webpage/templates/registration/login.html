@@ -1,9 +1,11 @@
 <!-- This is a html template for log in page
+<input type="submit" value="login" />
 -->
 
 {% extends "webpage/base.html" %}
 
 {% block content %}
+    <div class="page">
     {% if form.errors %}
         <p>Wrong username or password!</p>
     {% endif %}
@@ -12,7 +14,7 @@
     {% csrf_token %}
         <table>
         <tr>
-            <td>{{ form.username.label_tag }}</td>
+            <td style="padding-right: 30px">{{ form.username.label_tag }}</td>
             <td>{{ form.username }}</td>
         </tr>
         <tr>
@@ -20,10 +22,13 @@
             <td>{{ form.password }}</td>
         </tr>
         </table>
-
-        <input type="submit" value="login" />
+        <input id="submit1" type="submit" value="login" style="display: none" />
+        <label for="submit1" class="button3">
+            Login
+        </label>
         <input type="hidden" name="next" value="{{ next }}" />
+        <br>
+        <a href="{% url 'register' %}" class="button3" >Create a new account</a>
     </form>
-    <a href="{% url 'register' %}" class="button1">Create a new account</a>
-
+    </div>
 {% endblock %}

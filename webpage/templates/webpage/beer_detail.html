@@ -5,15 +5,12 @@
 
 {% block content %}
     <div class="page">
-        {% if beer.published_date %}
-            <div class="date">
-                {{ post.published_date }}
-            </div>
-        {% endif %}
         {% if user.is_authenticated %}
             <a class="btn btn-default" href="{% url 'beer_edit' pk=beer.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             <a class="btn btn-default" href="{% url 'beer_remove' pk=beer.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
         {% endif %}
+        <img style="float: left; margin-right: 30px" alt="Beer Image" height="300px" width="auto" src="{{ beer.picture }}">
+        <div class="beer-desc">
         <h2>{{ beer.brewery }}: {{ beer.name }}</h2>
         <p><b>Brewery:</b> {{ beer.brewery }}</p>
         <p><b>Name:</b> {{ beer.name }}</p>
@@ -21,9 +18,15 @@
         <p><b>Alcohol [%]:</b> {{ beer.alcohol_content }}</p>
         <p><b>BLG:</b> {{ beer.blg }}</p>
         <p><b>Users Rating:</b> {{ beer.reviews_avg }} ({{ beer.reviews_counter }})</p>
+            {% if beer.published_date %}
+            <div class="date">
+                Added: {{ beer.published_date }}
+            </div>
+        {% endif %}
+        </div>
     </div>
+    <h2>Comments:</h2>
     <br>
-    <p><b>Comments:</b>
     {% for review in reviews %}
         <div class="pege">
             <p class="info">

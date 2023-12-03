@@ -13,6 +13,7 @@ class Beer(models.Model):
     style = models.CharField(max_length=25)
     alcohol_content = models.FloatField(default=0)
     blg = models.FloatField(default=0)
+    picture = models.CharField(max_length=250, null=True, blank=True)
     # Only Beers approved by admin should be shown in the Beer Ranking page - default False
     isapproved = models.BooleanField(default=False)
 

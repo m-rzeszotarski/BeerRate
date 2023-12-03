@@ -11,7 +11,7 @@ class BeerForm(forms.ModelForm):
 
     class Meta:
         model = Beer
-        fields = ('brewery', 'name', 'style', 'alcohol_content', 'blg')
+        fields = ('brewery', 'name', 'style', 'alcohol_content', 'blg', 'picture')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,6 +29,7 @@ class BeerForm(forms.ModelForm):
             Field('style', css_class="form50"),
             Field('alcohol_content', css_class="form10"),
             Field('blg', css_class="form10"),
+            Field('picture', css_class="form50"),
         )
         self.helper.add_input(Submit('submit', 'Save'))
 
