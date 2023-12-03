@@ -28,7 +28,8 @@ class Beer(models.Model):
         review = Review.objects.filter(beer=self).aggregate(average=Avg('score'))
         avg = 0
         if review["average"] is not None:
-            avg = float(review["average"])
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(review["average"]), 1)
         return avg
 
     # Function that returns the total number of reviews (ratings)
