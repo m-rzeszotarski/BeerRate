@@ -1,3 +1,6 @@
+<!-- This is a html template in which you can see more information about selected beer, reviews, and where you can add new review of beer
+-->
+
 {% extends 'webpage/base.html' %}
 
 {% block content %}
@@ -16,6 +19,33 @@
         <p><b>Name:</b> {{ beer.name }}</p>
         <p><b>Style:</b> {{ beer.style }}</p>
         <p><b>Alcohol [%]:</b> {{ beer.alcohol_content }}</p>
-        <p><b>BLG</b> {{ beer.blg }}</p>
+        <p><b>BLG:</b> {{ beer.blg }}</p>
+        <p><b>Users Rating:</b> {{ beer.reviews_avg }} ({{ beer.reviews_counter }})</p>
     </div>
+    <br>
+    <p><b>Comments:</b>
+    {% for review in reviews %}
+        <div class="pege">
+            <p class="info">
+            {{ review.score }} / 5 ({{ review.author }}) : {{ review.comment }}
+            </p>
+            <br>
+        </div>
+        {% empty %}
+        <p>There are no reviews yet.</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+    {% if new_review %}
+    <h2>Your review has been added.</h2>
+    {% else %}
+    <h2>Add a new review</h2>
+    <form action="." method="post">
+    {{ review_form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Add review"></p>
+    </form>
+    {% endif %}
+    {% endif %}
+
 {% endblock %}
