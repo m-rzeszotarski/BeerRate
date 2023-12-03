@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Beer, Review
 from .forms import BeerForm, ReviewForm, NewUserForm
-from django.contrib.auth import login
 from django.contrib import messages
 
 
@@ -105,5 +104,5 @@ def register_request(request):
     else:
         messages.error(request, "Unsuccessful registration. Invalid information.")
         form = NewUserForm()
-    return render(request, "webpage/register.html", {"register_form": form})
+    return render(request, "registration/register.html", {"register_form": form})
 
