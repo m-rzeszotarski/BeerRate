@@ -2,6 +2,7 @@
 -->
 
 {% extends 'webpage/base.html' %}
+{% load crispy_forms_filters %}
 
 {% block content %}
     <div class="page">
@@ -23,16 +24,11 @@
                 Added: {{ beer.published_date }}
             </div>
         {% endif %}
-    </div>
     <h2>Comments:</h2>
     <br>
     {% for review in reviews %}
-        <div class="pege">
-            <p class="info">
-            {{ review.score }} / 5 ({{ review.author }}) : {{ review.comment }}
-            </p>
+            <p>{{ review.score }} / 5 ({{ review.author }}) : {{ review.comment }}</p>
             <br>
-        </div>
         {% empty %}
         <p>There are no reviews yet.</p>
     {% endfor %}
@@ -43,10 +39,13 @@
     {% else %}
     <h2>Add a new review</h2>
     <form action="." method="post">
-    {{ review_form.as_p }}
     {% csrf_token %}
-    <p><input type="submit" value="Add review"></p>
+    <input id="submit1" type="submit" value="login" style="display: none" />
+        <label for="submit1" class="button3">
+            Add review
+        </label>
     </form>
+        </div>
     {% endif %}
     {% endif %}
 

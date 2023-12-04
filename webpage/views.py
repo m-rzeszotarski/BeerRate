@@ -43,6 +43,14 @@ def beer_detail(request, pk):
     if request.method == "POST":
         review_form = ReviewForm(data=request.POST)
         if review_form.is_valid():
+            # filtering reviews for selected beer and logged user
+            old_review = Review.objects.filter(beer=beer, author=request.user)
+            # counting number of review for selected beer created by logged user
+            old_review_count = old_review.count()
+            # if number of review is greater than 0 script deletes old review
+            # (only one review can be created by one user)
+            if old_review_count > 0:
+                old_review.delete()
             # Create Review object but don't save to database yet
             new_review = review_form.save(commit=False)
             # Assign the current beer to the review
