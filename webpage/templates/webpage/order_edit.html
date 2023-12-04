@@ -1,4 +1,4 @@
-<!-- This is a html template for creation of new beers in database and editing existing ones
+<!-- This is a html template for creation of orders in database and editing existing ones
 -->
 
 {% extends 'webpage/base.html' %}
@@ -6,7 +6,7 @@
 {% crispy example_form example_form.helper %}
 
 {% block content %}
-    <h2>New beer</h2>
+    <h2>New order</h2>
     <br/>
     <form method="POST" class="post-form">{% csrf_token %}
         {% crispy form %}

@@ -1,0 +1,26 @@
+<!-- This is a html template in which you can see info about order
+-->
+
+{% extends 'webpage/base.html' %}
+
+{% block content %}
+    <div class="page">
+        <p><b>Your order number:</b> {{ order.pk }}</p>
+        <p><b>Ordered Products:</b> {{ order.product }}<p>
+        <p><b>Price:</b> {{ order.price }} PLN</p>
+        <p><b>Username:</b> {{ order.author }}</p>
+        <p><b>Name:</b> {{ order.name }}</p>
+        <p><b>Surname:</b> {{ order.surname }}</p>
+        <p><b>Country:</b> {{ order.country }}</p>
+        <p><b>City:</b> {{ order.city }}</p>
+        <p><b>Street:</b> {{ order.street }}</p>
+        <p><b>Phone:</b> {{ order.phone }}</p>
+        <p><b>Date:</b> {{ order.date }}</p>
+        <p><b>Status:</b> {{ order.status }}</p>
+
+        <br>
+        <p><b>To complete the order, send a transfer to the XX XXXX XXXX XXXX XXXX XXXX XXXX bank account</b></p>
+        <p><b>with the order number in the transfer title.</b></p>
+    </div>
+    </div>
+{% endblock %}

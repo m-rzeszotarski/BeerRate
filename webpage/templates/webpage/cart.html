@@ -1,0 +1,27 @@
+<!-- This is a html template for cart
+-->
+
+{%  extends 'webpage/base.html' %}
+
+{% block content %}
+
+    <div class='page'>
+    <h1>Your Shopping Cart</h1>
+    <br>
+    {% for item in cart_items %}
+        <h2><p>{{ item.product.name }} ({{ item.quantity }})</p></h2>
+        <p>Price: {{ item.product.price }} PLN</p>
+        <a class="button2" href="{% url 'increase_cart_item' item.pk %}">+1</a><a class="button2" href="{% url 'decrease_cart_item' item.pk %}">-1</a><a class="button2" ref="{% url 'remove_from_cart' item.pk %}">Remove</a>
+    {% empty %}
+        <p>Your cart is empty.</p>
+    {% endfor %}
+    <br>
+    <h1><p>Total Price: {{ total_price }} PLN (+ 25PLN shipping)</p></h1>
+    <br>
+    <br>
+    <a class="button3" href="{% url 'make_order' %}">Make order</a>
+    <br>
+    <a class="button3" href="{% url 'mybeer_list' %}">Continue Shopping</a>
+    </div>
+
+{% endblock %}

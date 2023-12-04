@@ -7,13 +7,21 @@
     <div class='page'>
         <a href="{% url 'beer_list' %}" class="button1">Beer Ranking</a>
         <br/>
-        <a href="https://pl.linkedin.com/in/michal-rzeszotarski" class="button1">About me</a>
+        <a href={% url 'mybeer_list' %} class="button1">Buy our Beers</a>
+        <br/>
+        <br/>
+        <br/>
+        <a href="https://pl.linkedin.com/in/michal-rzeszotarski" class="button1">My LinkedIn</a>
+        <br/>
+        <a href="https://github.com/m-rzeszotarski" class="button1">My GitHub</a>
         <br/>
         {% if user.is_superuser %}
             <br/>
             <br/>
             <br/>
             <a href="{% url 'approve_list' %}" class="button1">Reviews to approve</a>
+            <br>
+            <a href="{% url 'order_list' %}" class="button1">Manage orders</a>
         {% endif %}
     </div>
 {% endblock %}

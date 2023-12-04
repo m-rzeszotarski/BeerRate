@@ -5,12 +5,12 @@
 
 {% block content %}
     <div class="page">
-        {% if user.is_authenticated %}
+
+        {% if user.is_authenticated and user.is_superuser %}
             <a class="btn btn-default" href="{% url 'beer_edit' pk=beer.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             <a class="btn btn-default" href="{% url 'beer_remove' pk=beer.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
         {% endif %}
         <img style="float: left; margin-right: 30px" alt="Beer Image" height="300px" width="auto" src="{{ beer.picture }}">
-        <div class="beer-desc">
         <h2>{{ beer.brewery }}: {{ beer.name }}</h2>
         <p><b>Brewery:</b> {{ beer.brewery }}</p>
         <p><b>Name:</b> {{ beer.name }}</p>
@@ -23,7 +23,6 @@
                 Added: {{ beer.published_date }}
             </div>
         {% endif %}
-        </div>
     </div>
     <h2>Comments:</h2>
     <br>
