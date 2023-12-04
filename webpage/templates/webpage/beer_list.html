@@ -2,7 +2,8 @@
 -->
 
 {% extends 'webpage/base.html' %}
-
+{% load crispy_forms_tags %}
+{% crispy example_form example_form.helper %}
 {% block content %}
     <h1>Beer ranking<br/><small><a href="{% url 'beer_new' %}" class="button2">Add new review</a></small></h1>
     <table id = "table" class = "table table-bordered display" style = "border-color: rgb(201, 201, 201); border-width: 2px;">
