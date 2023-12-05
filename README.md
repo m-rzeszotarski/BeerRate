@@ -12,9 +12,9 @@ For this project, I utilized a few additional packages listed below:
 
 ## Beer Rating Classes
 
-The primary model in the application is the "Beer" class. Any logged-in user can create a beer using a form. It includes author information, date, beer-specific variables, and a boolean "isapproved." When a user creates a new beer in the database, it must be approved by a superuser ("isapproved" False -> True) before appearing on the "beer_list" page.
+The primary model in the application is the **Beer** class. Any logged-in user can create a beer using a form. It includes author information, date, beer-specific variables, and a boolean **isapproved**. When a user creates a new beer in the database, it must be approved by a superuser (**isapproved** False -> True) before appearing on the **beer_list** page.
 
-The second class is "Review." Each user can add a review to an existing beer in the database, consisting of a user rating and a comment. Each review is linked to a specific beer through a foreign key. A superuser can ban a review (boolean "banned" False -> True). Each user can add only one review for a specific beer (details in the next section).
+The second class is **Review**. Each user can add a review to an existing beer in the database, consisting of a user rating and a comment. Each review is linked to a specific beer through a **ForeignKey**. A superuser can ban a review (boolean **banned** False -> True). Each user can add only one review for a specific beer (details in the next section).
 
 ## Beer Rating Functions
 
