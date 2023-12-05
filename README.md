@@ -5,7 +5,7 @@ I didn't want to divide this application into two, so both the beer rating part 
 
 ## Packages
 
-For this project I used few additional packages
+For this project I used few additional packages LIST
 
 ## Beer Rating Classes
 
@@ -47,7 +47,7 @@ After order form is saved, items from cart are deleted. To manage order status f
 - Add multiple shipping options
 - Paypal integration for payment
 - Ban reviews (boolean is present but there is no function for changing it)
-​
+​- Improvement of access restriction and security
 
 
 
