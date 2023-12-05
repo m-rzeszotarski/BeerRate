@@ -6,9 +6,8 @@ I didn't want to divide the application into two separate entities, so both the 
 ## Packages
 
 For this project, I utilized a few additional packages listed below:
-
-[Package 1]
-[Package 2]
+- Package 1
+- Package 2
 
 ## Beer Rating Classes
 
