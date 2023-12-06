@@ -14,7 +14,12 @@
                 <th>Style</th>
                 <th>Alcohol [%]</th>
                 <th>BLG</th>
-                <th>Users Rating</th>
+                <th>Rating</th>
+                <th>Hop</th>
+                <th>Malt</th>
+                <th>Roast</th>
+                <th>Smoke</th>
+                <th>Fruit</th>
             </tr>
         </thead>
         <tbody>
@@ -26,8 +31,13 @@
                         <td>{{ beer.style }}</td>
                         <td>{{ beer.alcohol_content }}</td>
                         <td>{{ beer.blg}}</td>
-                        <td>{{ beer.reviews_avg }}</td>
-                    </tr>
+                        <td>{{ beer.reviews_avg_score }}</td>
+                        <td>{{ beer.reviews_avg_hop }}</td>
+                        <td>{{ beer.reviews_avg_malt }}</td>
+                        <td>{{ beer.reviews_avg_roast }}</td>
+                        <td>{{ beer.reviews_avg_smoke }}</td>
+                        <td>{{ beer.reviews_avg_fruit }}</td>
+                        </tr>
                 {% endif %}
             {% endfor %}
         </tbody>
