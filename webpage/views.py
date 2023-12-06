@@ -33,6 +33,14 @@ def beer_list(request):
 # view showing details of chosen beer
 def beer_detail(request, pk):
     beer = get_object_or_404(Beer, pk=pk)
+
+    chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
+    chart_data = [beer.reviews_avg_hop(),
+                  beer.reviews_avg_malt(),
+                  beer.reviews_avg_roast(),
+                  beer.reviews_avg_smoke(),
+                  beer.reviews_avg_fruit()]
+
     review = Review.objects.filter(beer=beer)
     # Only not banned reviews are considered
     reviews = beer.reviews.filter(banned=False)
@@ -41,7 +49,7 @@ def beer_detail(request, pk):
 
     # creating new review
     if request.method == "POST":
-        review_form = ReviewForm(data=request.POST)
+        review_form = ReviewForm(request.POST)
         if review_form.is_valid():
             # filtering reviews for selected beer and logged user
             old_review = Review.objects.filter(beer=beer, author=request.user)
@@ -62,6 +70,8 @@ def beer_detail(request, pk):
     else:
         review_form = ReviewForm()
     return render(request, 'webpage/beer_detail.html', {'beer': beer,
+                                                        'chart_labels': chart_labels,
+                                                        'chart_data': chart_data,
                                                         'review': review,
                                                         'reviews': reviews,
                                                         'new_review': new_review,

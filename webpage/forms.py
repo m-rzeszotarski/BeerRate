@@ -39,7 +39,7 @@ class ReviewForm(forms.ModelForm):
 
     class Meta:
         model = Review
-        fields = ('score', 'comment')
+        fields = ('score', 'hop', 'malt', 'roast', 'smoke', 'fruit', 'comment')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,6 +53,11 @@ class ReviewForm(forms.ModelForm):
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             Field('score', css_class="form10"),
+            Field('hop', css_class="form10"),
+            Field('malt', css_class="form10"),
+            Field('roast', css_class="form10"),
+            Field('smoke', css_class="form10"),
+            Field('fruit', css_class="form10"),
             Field('comment', css_class="form50"),
         )
         self.helper.add_input(Submit('submit', 'Save'))

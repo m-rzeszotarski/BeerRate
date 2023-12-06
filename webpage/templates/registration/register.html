@@ -1,6 +1,7 @@
 <!-- This is a html template for creating account for new user
 -->
 {%  extends 'webpage/base.html' %}
+{% load crispy_forms_filters %}
 
 {% block content %}
 
@@ -12,6 +13,7 @@
 		{% csrf_token %}
 		{{ register_form|crispy }}
 		<input id="submit1" type="submit" value="login" style="display: none" />
+                <!-- By label I hide ugly submit button and replace it with mine -->
         <label for="submit1" class="button3">
             Register
         </label>

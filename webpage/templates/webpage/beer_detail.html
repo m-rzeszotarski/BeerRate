@@ -11,23 +11,35 @@
             <a class="btn btn-default" href="{% url 'beer_edit' pk=beer.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             <a class="btn btn-default" href="{% url 'beer_remove' pk=beer.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
         {% endif %}
-        <img style="float: left; margin-right: 30px" alt="Beer Image" height="300px" width="auto" src="{{ beer.picture }}">
+        <img style="float: left; margin-right: 100px; margin-left: 30px"; alt="Beer Image" height="300px" width="auto" src="{{ beer.picture }}">
         <h2>{{ beer.brewery }}: {{ beer.name }}</h2>
+        <div class="page" style="width: 50%; float: right">
+        <canvas id="Chart"></canvas>
+        </div>
         <p><b>Brewery:</b> {{ beer.brewery }}</p>
         <p><b>Name:</b> {{ beer.name }}</p>
         <p><b>Style:</b> {{ beer.style }}</p>
         <p><b>Alcohol [%]:</b> {{ beer.alcohol_content }}</p>
         <p><b>BLG:</b> {{ beer.blg }}</p>
-        <p><b>Users Rating:</b> {{ beer.reviews_avg }} ({{ beer.reviews_counter }})</p>
+        <p><b>Rating:</b> {{ beer.reviews_avg_score }}</p>
             {% if beer.published_date %}
             <div class="date">
                 Added: {{ beer.published_date }}
             </div>
         {% endif %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <h2>Comments:</h2>
     <br>
     {% for review in reviews %}
-            <p>{{ review.score }} / 5 ({{ review.author }}) : {{ review.comment }}</p>
+            <p>{{ review.score }} / 10 ({{ review.author }}) : {{ review.comment }}</p>
             <br>
         {% empty %}
         <p>There are no reviews yet.</p>
@@ -39,8 +51,10 @@
     {% else %}
     <h2>Add a new review</h2>
     <form action="." method="post">
+    {{ review_form|crispy }}
     {% csrf_token %}
     <input id="submit1" type="submit" value="login" style="display: none" />
+        <!-- By label I hide ugly submit button and replace it with mine -->
         <label for="submit1" class="button3">
             Add review
         </label>
@@ -49,4 +63,42 @@
     {% endif %}
     {% endif %}
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      const ctx = document.getElementById('Chart');
+      const data = {
+  labels: {{ chart_labels|safe }},
+  datasets: [{
+    label: '',
+    data: {{ chart_data|safe }},
+    fill: true,
+    backgroundColor: 'rgba(230, 87, 31, 0.2)',
+    borderColor: 'rgb(230, 87, 31)',
+    pointBackgroundColor: 'rgb(255, 99, 132)',
+    pointBorderColor: '#fff',
+    pointHoverBackgroundColor: '#fff',
+    pointHoverBorderColor: 'rgb(255, 99, 132)'
+  }, ]
+};
+
+      new Chart(ctx, {
+        type: 'radar',
+  data: data,
+  options: {
+      plugins: {
+          legend: {
+              display: false
+                }
+            },
+    elements: {
+      line: {
+        borderWidth: 3
+      }
+    },
+  },
+});
+    </script>
+
 {% endblock %}
+
