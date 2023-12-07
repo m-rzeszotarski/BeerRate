@@ -3,7 +3,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-+x)l+bsz*i2q2t368v#3mce#rr*ll#&b&a83u8bfo)5gfcv**4'
 
@@ -11,7 +10,6 @@ SECRET_KEY = 'django-insecure-+x)l+bsz*i2q2t368v#3mce#rr*ll#&b&a83u8bfo)5gfcv**4
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
-
 
 # Application definition
 
@@ -25,6 +23,7 @@ INSTALLED_APPS = [
     'webpage',
     'crispy_forms',
     'crispy_bootstrap4',
+    'paypal.standard.ipn',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -60,7 +59,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BeerRate.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -70,7 +68,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -90,7 +87,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -101,7 +97,6 @@ TIME_ZONE = 'Europe/Warsaw'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -115,3 +110,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
+
+#django-paypall settings
+PAYPAL_RECEIVER_EMAIL = 'm.rzeszotarski45@gmail.com'
+PAYPAL_TEST = True
