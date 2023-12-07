@@ -6,15 +6,25 @@ from django.db.models import Avg, Count
 from django.contrib.auth.models import User
 
 
-class Beer(models.Model):
+# Main model - Beer and MyBeer (ecommerce) are inheriting from it
+class BeerMain(models.Model):
     author = models.CharField(max_length=25)
     published_date = models.DateField(default=timezone.now)
-    brewery = models.CharField(max_length=25)
     name = models.CharField(max_length=30)
     style = models.CharField(max_length=25)
     alcohol_content = models.FloatField(default=0)
     blg = models.FloatField(default=0)
     picture = models.CharField(max_length=250, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+
+
+class Beer(BeerMain):
+    brewery = models.CharField(max_length=25)
     # Only Beers approved by admin should be shown in the Beer Ranking page - default False
     isapproved = models.BooleanField(default=False)
 
@@ -33,6 +43,16 @@ class Beer(models.Model):
             # round - rounding the number up to 1 decimal place
             avg = round(float(review["average"]), 1)
         return avg
+
+        # Function that returns the total number of reviews (ratings)
+        # The same principle as in previous function
+
+    def reviews_counter(self):
+        reviews = Review.objects.filter(beer=self).aggregate(count=Count('pk'))
+        counter = 0
+        if reviews["count"] is not None:
+            counter = int(reviews["count"])
+        return counter
 
     def reviews_avg_hop(self):
         review = Review.objects.filter(beer=self).aggregate(average=Avg('hop'))
@@ -74,15 +94,6 @@ class Beer(models.Model):
             avg = round(float(review["average"]), 1)
         return avg
 
-    # Function that returns the total number of reviews (ratings)
-    # The same principle as in previous function
-    def reviews_counter(self):
-        reviews = Review.objects.filter(beer=self).aggregate(count=Count('pk'))
-        counter = 0
-        if reviews["count"] is not None:
-            counter = int(reviews["count"])
-        return counter
-
     def __str__(self):
         return self.name
 
@@ -103,15 +114,8 @@ class Review(models.Model):
     banned = models.BooleanField(default=False)
 
 
-class MyBeer(models.Model):
-    author = models.CharField(max_length=25)
-    published_date = models.DateField(default=timezone.now)
-    name = models.CharField(max_length=30)
+class MyBeer(BeerMain):
     description = models.CharField(max_length=250, null=True, blank=True)
-    style = models.CharField(max_length=25)
-    alcohol_content = models.FloatField(default=0)
-    blg = models.FloatField(default=0)
-    picture = models.CharField(max_length=250, null=True, blank=True)
     malts = models.CharField(max_length=250, null=True, blank=True)
     hops = models.CharField(max_length=250, null=True, blank=True)
     additives = models.CharField(max_length=250, null=True, blank=True)
