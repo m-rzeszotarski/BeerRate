@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from paypal.standard.forms import PayPalPaymentsForm
+from django.contrib.contenttypes.models import ContentType
 
 
 def home(request):
@@ -45,9 +46,10 @@ def beer_detail(request, pk):
                   beer.reviews_avg_smoke(),
                   beer.reviews_avg_fruit()]
 
-    review = Review.objects.filter(beer=beer)
+    content_type = ContentType.objects.get_for_model(beer)
+
+    reviews = Review.objects.filter(content_type=content_type, object_pk=beer.pk, banned=False)
     # Only not banned reviews are considered
-    reviews = beer.reviews.filter(banned=False)
 
     new_review = None
 
@@ -55,8 +57,9 @@ def beer_detail(request, pk):
     if request.method == "POST":
         review_form = ReviewForm(request.POST)
         if review_form.is_valid():
+            content_type = ContentType.objects.get_for_model(beer)
             # filtering reviews for selected beer and logged user
-            old_review = Review.objects.filter(beer=beer, author=request.user)
+            old_review = Review.objects.filter(content_type=content_type, object_pk=beer.pk, author=request.user)
             # counting number of review for selected beer created by logged user
             old_review_count = old_review.count()
             # if number of review is greater than 0 script deletes old review
@@ -66,7 +69,8 @@ def beer_detail(request, pk):
             # Create Review object but don't save to database yet
             new_review = review_form.save(commit=False)
             # Assign the current beer to the review
-            new_review.beer = beer
+            new_review.content_type = content_type
+            new_review.object_pk = beer.pk
             # Assign logged username to 'author' field
             new_review.author = request.user
             # Save the review to the database
@@ -76,7 +80,6 @@ def beer_detail(request, pk):
     return render(request, 'webpage/beer_detail.html', {'beer': beer,
                                                         'chart_labels': chart_labels,
                                                         'chart_data': chart_data,
-                                                        'review': review,
                                                         'reviews': reviews,
                                                         'new_review': new_review,
                                                         'review_form': review_form})
@@ -119,6 +122,7 @@ def beer_edit(request, pk):
 @user_passes_test(lambda u: u.is_superuser)
 def beer_remove(request, pk):
     beer = get_object_or_404(Beer, pk=pk)
+    beer.reviews.all().delete()
     beer.delete()
     return redirect('beer_list')
 
@@ -165,6 +169,7 @@ def mybeer_edit(request, pk):
 @user_passes_test(lambda u: u.is_superuser)
 def mybeer_remove(request, pk):
     mybeer = get_object_or_404(MyBeer, pk=pk)
+    mybeer.reviews.all().delete()
     mybeer.delete()
     return redirect('mybeer_list')
 
@@ -188,7 +193,51 @@ def mybeer_new(request):
 # view showing details of chosen my beer (shop)
 def mybeer_detail(request, pk):
     mybeer = get_object_or_404(MyBeer, pk=pk)
-    return render(request, 'webpage/mybeer_detail.html', {'mybeer': mybeer})
+
+    chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
+    chart_data = [mybeer.reviews_avg_hop(),
+                  mybeer.reviews_avg_malt(),
+                  mybeer.reviews_avg_roast(),
+                  mybeer.reviews_avg_smoke(),
+                  mybeer.reviews_avg_fruit()]
+
+    content_type = ContentType.objects.get_for_model(mybeer)
+
+    reviews = Review.objects.filter(content_type=content_type, object_pk=mybeer.pk, banned=False)
+    # Only not banned reviews are considered
+
+    new_review = None
+
+    # creating new review
+    if request.method == "POST":
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            content_type = ContentType.objects.get_for_model(mybeer)
+            # filtering reviews for selected beer and logged user
+            old_review = Review.objects.filter(content_type=content_type, object_pk=mybeer.pk, author=request.user)
+            # counting number of review for selected beer created by logged user
+            old_review_count = old_review.count()
+            # if number of review is greater than 0 script deletes old review
+            # (only one review can be created by one user)
+            if old_review_count > 0:
+                old_review.delete()
+            # Create Review object but don't save to database yet
+            new_review = review_form.save(commit=False)
+            # Assign the current beer to the review
+            new_review.content_type = content_type
+            new_review.object_pk = mybeer.pk
+            # Assign logged username to 'author' field
+            new_review.author = request.user
+            # Save the review to the database
+            new_review.save()
+    else:
+        review_form = ReviewForm()
+    return render(request, 'webpage/mybeer_detail.html', {'mybeer': mybeer,
+                                                          'chart_labels': chart_labels,
+                                                          'chart_data': chart_data,
+                                                          'reviews': reviews,
+                                                          'new_review': new_review,
+                                                          'review_form': review_form})
 
 
 # view showing items in cart (shop)
