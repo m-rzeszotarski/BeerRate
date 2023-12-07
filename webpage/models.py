@@ -4,6 +4,26 @@ from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Avg, Count
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+
+
+# Users can rate and add comment to each beer in the database.
+class Review(models.Model):
+    # Each review must be assigned to the Beer or MyBeer that it applies to. I used GenericForeignKey
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_pk = models.PositiveIntegerField()
+    beer = GenericForeignKey('content_type', 'object_pk')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    hop = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    malt = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    roast = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    smoke = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    fruit = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    comment = models.TextField(max_length=250, null=True, blank=True)
+    published_date = models.DateField(default=timezone.now)
+    banned = models.BooleanField(default=False)
 
 
 # Main model - Beer and MyBeer (ecommerce) are inheriting from it
@@ -16,11 +36,102 @@ class BeerMain(models.Model):
     blg = models.FloatField(default=0)
     picture = models.CharField(max_length=250, null=True, blank=True)
 
+    reviews = GenericRelation(Review, content_type_field='content_type', object_id_field='object_pk')
+
     def __str__(self):
         return self.name
 
     class Meta:
         abstract = True
+
+# Function that returns calculated average from users rating
+    def reviews_avg_score(self):
+        # Filter - only reviews of selected beer are considered, then aggregation
+        # and usage of Avg which calculates average
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(average=Avg('score'))
+        avg = 0
+        if reviews["average"] is not None:
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(reviews["average"]), 1)
+        return avg
+
+        # Function that returns the total number of reviews (ratings)
+        # The same principle as in previous function
+
+    def reviews_counter(self):
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(count=Count('pk'))
+        counter = 0
+        if reviews["count"] is not None:
+            counter = int(reviews["count"])
+        return counter
+
+    def reviews_avg_hop(self):
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(average=Avg('hop'))
+        avg = 0
+        if reviews["average"] is not None:
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(reviews["average"]), 1)
+        return avg
+
+    def reviews_avg_malt(self):
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(average=Avg('malt'))
+        avg = 0
+        if reviews["average"] is not None:
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(reviews["average"]), 1)
+        return avg
+
+    def reviews_avg_roast(self):
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(average=Avg('roast'))
+        avg = 0
+        if reviews["average"] is not None:
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(reviews["average"]), 1)
+        return avg
+
+    def reviews_avg_smoke(self):
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(average=Avg('smoke'))
+        avg = 0
+        if reviews["average"] is not None:
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(reviews["average"]), 1)
+        return avg
+
+    def reviews_avg_fruit(self):
+        content_type = ContentType.objects.get_for_model(self)
+        reviews = Review.objects.filter(
+            content_type=content_type,
+            object_pk=self.pk
+        ).aggregate(average=Avg('fruit'))
+        avg = 0
+        if reviews["average"] is not None:
+            # round - rounding the number up to 1 decimal place
+            avg = round(float(reviews["average"]), 1)
+        return avg
 
 
 class Beer(BeerMain):
@@ -33,85 +144,8 @@ class Beer(BeerMain):
         self.isapproved = True
         self.save()
 
-    # Function that returns calculated average from users rating
-    def reviews_avg_score(self):
-        # Filter - only reviews of selected beer are considered, then aggregation
-        # and usage of Avg which calculates average
-        review = Review.objects.filter(beer=self).aggregate(average=Avg('score'))
-        avg = 0
-        if review["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(review["average"]), 1)
-        return avg
-
-        # Function that returns the total number of reviews (ratings)
-        # The same principle as in previous function
-
-    def reviews_counter(self):
-        reviews = Review.objects.filter(beer=self).aggregate(count=Count('pk'))
-        counter = 0
-        if reviews["count"] is not None:
-            counter = int(reviews["count"])
-        return counter
-
-    def reviews_avg_hop(self):
-        review = Review.objects.filter(beer=self).aggregate(average=Avg('hop'))
-        avg = 0
-        if review["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(review["average"]), 1)
-        return avg
-
-    def reviews_avg_malt(self):
-        review = Review.objects.filter(beer=self).aggregate(average=Avg('malt'))
-        avg = 0
-        if review["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(review["average"]), 1)
-        return avg
-
-    def reviews_avg_roast(self):
-        review = Review.objects.filter(beer=self).aggregate(average=Avg('roast'))
-        avg = 0
-        if review["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(review["average"]), 1)
-        return avg
-
-    def reviews_avg_smoke(self):
-        review = Review.objects.filter(beer=self).aggregate(average=Avg('smoke'))
-        avg = 0
-        if review["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(review["average"]), 1)
-        return avg
-
-    def reviews_avg_fruit(self):
-        review = Review.objects.filter(beer=self).aggregate(average=Avg('fruit'))
-        avg = 0
-        if review["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(review["average"]), 1)
-        return avg
-
     def __str__(self):
         return self.name
-
-
-# Users can rate and add comment to each beer in the database.
-class Review(models.Model):
-    # Each review must be assigned to the beer that it applies to
-    beer = models.ForeignKey(Beer, on_delete=models.CASCADE, related_name="reviews")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    score = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    hop = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    malt = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    roast = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    smoke = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    fruit = models.IntegerField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    comment = models.TextField(max_length=250, null=True, blank=True)
-    published_date = models.DateField(default=timezone.now)
-    banned = models.BooleanField(default=False)
 
 
 class MyBeer(BeerMain):
