@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 # urls for created views
@@ -25,7 +25,6 @@ urlpatterns = [
     path('increase_cart_item<int:pk>', views.increase_cart_item, name='increase_cart_item'),
     path('decrease_cart_item<int:pk>', views.decrease_cart_item, name='decrease_cart_item'),
     path('order/new', views.make_order, name='make_order'),
-    path('order/<int:pk>/', views.order_detail, name='order_detail'),
     path('order/<int:pk>/edit', views.order_edit, name='order_edit'),
     path('order_list', views.order_list, name='order_list'),
     path('order/<int:pk>/remove', views.order_remove, name='order_remove'),
@@ -35,4 +34,10 @@ urlpatterns = [
     path('order/<int:pk>/completed', views.order_completed, name='order_completed'),
     path('order/<int:pk>/delayed', views.order_delayed, name='order_delayed'),
     path('order_status', views.order_status, name='order_status'),
+    path('paypal/', include("paypal.standard.ipn.urls")),
+    path('payment/process', views.payment_process, name='payment_process'),
+    path('payment/done', views.payment_done, name='payment_done'),
+    path('payment/canceled', views.payment_canceled, name='payment_canceled'),
+
+
 ]

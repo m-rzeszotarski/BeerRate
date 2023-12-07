@@ -1,9 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.csrf import csrf_exempt
 from .models import Beer, Review, MyBeer, CartItem, Order
 from .forms import BeerForm, ReviewForm, NewUserForm, MyBeerForm, OrderForm
 from django.contrib import messages
+from django.urls import reverse
+from django.conf import settings
+from paypal.standard.forms import PayPalPaymentsForm
 
 
 def home(request):
@@ -262,14 +266,49 @@ def make_order(request):
             order.save()
             # Order saved - products should be removed from cart
             CartItem.objects.filter(user=request.user).delete()
-            return redirect('order_detail', pk=order.pk)
+            request.session['order_pk'] = order.pk
+            return redirect(reverse('payment_process'))
     else:
         form = OrderForm()
     return render(request, 'webpage/order_edit.html', {'form': form})
 
 
+def payment_process(request):
+    order_pk = request.session.get('order_pk')
+    order = get_object_or_404(Order, pk=order_pk)
+    host = request.get_host()
+
+    paypal_dict = {
+        "business": settings.PAYPAL_RECEIVER_EMAIL,
+        "amount": str(order.price),
+        "item_name": str(Order.product),
+        "invoice": str(order.pk),
+        "currency_code": 'PLN',
+        "notify_url": 'http://{}{}'.format(host, reverse('paypal-ipn')),
+        "return": 'http://{}{}'.format(host, reverse('payment_done')),
+        "cancel_return": request.build_absolute_uri(reverse('payment_canceled')),
+        "custom": "premium_plan",  # Custom command to correlate to some function later (optional)
+    }
+
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    return render(request, "webpage/payment_process.html", {'order': order,
+                                                            'form': form})
+
+
+# view showing the order detail - @csrf_exempt used to avoid Django expecting a CSRF token
+# since PayPal can redirect the user to this view by POST
+@csrf_exempt
+def payment_done(request):
+    return render(request, 'webpage/payment_done.html')
+
+
+@csrf_exempt
+def payment_canceled(request):
+    return render(request, 'webpage/payment_canceled.html')
+
+
 # view for editing the order
-@login_required
+
 def order_edit(request, pk):
     order = get_object_or_404(Order, pk=pk)
     if request.method == "POST":
@@ -283,13 +322,6 @@ def order_edit(request, pk):
     else:
         form = OrderForm(instance=order)
     return render(request, 'webpage/order_edit.html', {'form': form})
-
-
-# view showing the order detail
-@login_required
-def order_detail(request, pk):
-    order = get_object_or_404(Order, pk=pk)
-    return render(request, 'webpage/order_detail.html', {'order': order})
 
 
 # view showing all orders in database (superuser only)
