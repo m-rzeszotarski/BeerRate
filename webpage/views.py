@@ -306,7 +306,7 @@ def make_order(request):
             # Add shipping charge
             if order.shipping == 'dpd':
                 order.price += 25
-            elif order.shipping =='inpost':
+            elif order.shipping == 'inpost':
                 order.price += 15
             elif order.shipping == 'poczta':
                 order.price += 35
@@ -445,32 +445,23 @@ def order_status(request):
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def review_ban(request, pk):
-    review = get_object_or_404(Review, pk=pk)
-    review.banned = True
+def handle_review_ban(request, review, is_banned):
+    review.banned = is_banned
     review.save()
 
     if review.content_type == ContentType.objects.get_for_model(Beer):
-        beer = get_object_or_404(Beer, pk=review.object_pk)
-        return redirect('beer_detail', pk=beer.pk)
+        return redirect('beer_detail', pk=review.object_pk)
     elif review.content_type == ContentType.objects.get_for_model(MyBeer):
-        mybeer = get_object_or_404(MyBeer, pk=review.object_pk)
-        return redirect('mybeer_detail', pk=mybeer.pk)
-    else:
-        return render(request, 'webpage/home.html', {})
+        return redirect('mybeer_detail', pk=review.object_pk)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def review_ban(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    return handle_review_ban(request, review, is_banned=True)
 
 
 @user_passes_test(lambda u: u.is_superuser)
 def review_unban(request, pk):
     review = get_object_or_404(Review, pk=pk)
-    review.banned = False
-    review.save()
-
-    if review.content_type == ContentType.objects.get_for_model(Beer):
-        beer = get_object_or_404(Beer, pk=review.object_pk)
-        return redirect('beer_detail', pk=beer.pk)
-    elif review.content_type == ContentType.objects.get_for_model(MyBeer):
-        mybeer = get_object_or_404(MyBeer, pk=review.object_pk)
-        return redirect('mybeer_detail', pk=mybeer.pk)
-    else:
-        return render(request, 'webpage/home.html', {})
+    return handle_review_ban(request, review, is_banned=False)
