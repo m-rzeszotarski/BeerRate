@@ -38,6 +38,7 @@ From home.html, users can access the shop, and superusers can view a page displa
 - Implement a function to ban reviews (boolean is present but lacks a function for changing it).
 - Remove autoscale from charts and make y in range 0 - 10
 ​- Enhance access restriction and security measures.
+- Modify page: mybeer_list, mybeer_detail
 
 
 
