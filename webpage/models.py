@@ -169,6 +169,12 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    SHIPPING_CHOICES = [
+        ('dpd', 'DPD - 25 PLN'),
+        ('inpost', 'InPost - 15 PLN'),
+        ('poczta', "Poczta Polska - 35 PLN")
+    ]
+
     product = models.TextField(max_length=250)
     price = models.IntegerField(default=0)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -179,5 +185,6 @@ class Order(models.Model):
     city = models.CharField(max_length=50)
     street = models.CharField(max_length=50)
     phone = models.CharField(max_length=50)
+    shipping = models.CharField(max_length=50, choices=SHIPPING_CHOICES, default='dpd')
     date = models.DateField(default=timezone.now)
     status = models.CharField(max_length=50, default='Pending')

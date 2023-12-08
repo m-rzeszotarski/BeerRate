@@ -113,7 +113,7 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ('name', 'surname', "email", 'country', 'city', 'street', 'phone')
+        fields = ('name', 'surname', "email", 'country', 'city', 'street', 'phone', 'shipping')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -133,6 +133,6 @@ class OrderForm(forms.ModelForm):
             Field('city', css_class="form10"),
             Field('street', css_class="form10"),
             Field('phone', css_class="form50"),
-
+            Field('shipping', css_class="form50"),
         )
         self.helper.add_input(Submit('submit', 'Save'))
