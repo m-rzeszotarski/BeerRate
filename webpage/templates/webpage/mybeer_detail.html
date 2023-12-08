@@ -38,8 +38,20 @@
     <section id="hiddenSection">
     <br>
     {% for review in reviews %}
-            <p>{{ review.score }} / 10 ({{ review.author }}) : {{ review.comment }}</p>
+        {% if not review.banned %}
+            <p>{{ review.score }} / 10 ({{ review.author }}) : {{ review.comment }}
+                {% if user.is_authenticated and user.is_superuser %}
+                    <a class="button2" href="{% url 'review_ban' pk=review.pk %}">Ban</a>
+                {% endif %}</p>
             <br>
+        {% endif %}
+        {% if review.banned and user.is_authenticated and user.is_superuser %}
+            <p>
+                {{ review.score }} / 10 ({{ review.author }}) : {{ review.comment }}
+                <a class="button2" href="{% url 'review_unban' pk=review.pk %}">Unban</a>
+            </p>
+            <br>
+        {% endif %}
         {% empty %}
         <p>There are no reviews yet.</p>
     {% endfor %}

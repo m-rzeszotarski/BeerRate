@@ -38,6 +38,6 @@ urlpatterns = [
     path('payment/process', views.payment_process, name='payment_process'),
     path('payment/done', views.payment_done, name='payment_done'),
     path('payment/canceled', views.payment_canceled, name='payment_canceled'),
-
-
+    path('review_ban/<int:pk>', views.review_ban, name='review_ban'),
+    path('review_unban/<int:pk>', views.review_unban, name='review_unban'),
 ]
