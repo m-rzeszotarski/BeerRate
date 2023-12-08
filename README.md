@@ -35,8 +35,8 @@ From home.html, users can access the shop, and superusers can view a page displa
 
 - Add the possibility to fill in purchaser's data in the user tab; this data will be used by default in the order form.
 - Include multiple shipping options.
-- Integrate PayPal for payment.
 - Implement a function to ban reviews (boolean is present but lacks a function for changing it).
+- Remove autoscale from charts and make y in range 0 - 10
 ​- Enhance access restriction and security measures.
 
 
