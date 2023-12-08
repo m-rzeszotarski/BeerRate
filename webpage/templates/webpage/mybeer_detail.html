@@ -11,20 +11,20 @@
             <a class="btn btn-default" href="{% url 'mybeer_edit' pk=mybeer.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             <a class="btn btn-default" href="{% url 'mybeer_remove' pk=mybeer.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
         {% endif %}
-        <img style="float: left; margin-right: 100px; margin-left: 30px"; alt="Beer Image" height="300px" width="auto" src="{{ mybeer.picture }}">
+        <img style="float: left; margin-right: 100px; margin-left: 30px" ; alt="Beer Image" height="300px" width="auto" src="{{ mybeer.picture }}">
         <div class="page" style="width: 50%; float: right">
         <canvas id="Chart"></canvas>
         </div>
         <h2>{{ mybeer.name }}</h2>
+        <p>- {{ mybeer.description }}</p>
         <p><b>Style:</b> {{ mybeer.style }}</p>
         <p><b>Alcohol [%]:</b> {{ mybeer.alcohol_content }}</p>
         <p><b>BLG:</b> {{ mybeer.blg }}</p>
-        <p><b>Rating:</b> {{ mybeer.reviews_avg_score }}</p>
-            {% if mybeer.published_date %}
-            <div class="date">
-                Added: {{ mybeer.published_date }}
-            </div>
-        {% endif %}
+        <p><b>Malts:</b> {{ mybeer.malts }}</p>
+        <p><b>Hops:</b> {{ mybeer.hops }}</p>
+        <p><b>Additives:</b> {{ mybeer.additives }}</p>
+        <h2><b>Price (PLN):</b> {{ mybeer.price }}</h2>
+        {% if user.is_authenticated %}<a class="button2" href="{% url 'add_to_cart' mybeer.pk %}">Add to Cart</a>{% endif %}
     <br>
     <br>
     <br>
@@ -34,11 +34,8 @@
     <br>
     <br>
     <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <h2>Comments:</h2>
+    <button id="toggleButton" class="button2">Hide/ show reviews</button>
+    <section id="hiddenSection">
     <br>
     {% for review in reviews %}
             <p>{{ review.score }} / 10 ({{ review.author }}) : {{ review.comment }}</p>
@@ -46,7 +43,7 @@
         {% empty %}
         <p>There are no reviews yet.</p>
     {% endfor %}
-
+    </section>
     {% if user.is_authenticated %}
     {% if new_review %}
     <h2>Your review has been added.</h2>
@@ -56,7 +53,7 @@
     {{ review_form|crispy }}
     {% csrf_token %}
     <input id="submit1" type="submit" value="login" style="display: none" />
-        <!-- By label I hide ugly submit button and replace it with mine -->
+        <!-- By label, I hide ugly submit button and replace it with mine -->
         <label for="submit1" class="button3">
             Add review
         </label>
@@ -88,6 +85,15 @@
         type: 'radar',
   data: data,
   options: {
+        scales: {
+            r: {
+                angleLines: {
+                    display: true
+                        },
+                    suggestedMin: 0,
+                    suggestedMax: 10
+            }
+        },
       plugins: {
           legend: {
               display: false
@@ -101,5 +107,15 @@
   },
 });
     </script>
+    <script>
+    document.getElementById('toggleButton').addEventListener('click', function() {
+      var hiddenSection = document.getElementById('hiddenSection');
+      if (hiddenSection.style.display === 'none') {
+        hiddenSection.style.display = 'block';
+      } else {
+        hiddenSection.style.display = 'none';
+      }
+    });
+  </script>
 
 {% endblock %}
