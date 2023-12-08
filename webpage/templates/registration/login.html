@@ -3,6 +3,7 @@
 -->
 
 {% extends "webpage/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="page">
@@ -12,23 +13,14 @@
 
     <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
-        <table>
-        <tr>
-            <td style="padding-right: 30px">{{ form.username.label_tag }}</td>
-            <td>{{ form.username }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.password.label_tag }}</td>
-            <td>{{ form.password }}</td>
-        </tr>
-        </table>
+        {{ form.username|as_crispy_field }}
+        {{ form.password|as_crispy_field }}
         <br>
         <input id="submit1" type="submit" value="login" style="display: none" />
                 <!-- By label I hide ugly submit button and replace it with mine -->
         <label for="submit1" class="button3">
             Login
-        </label>
-        <input type="hidden" name="next" value="{{ next }}" />
+            </label>
         <br>
         <a href="{% url 'register' %}" class="button3" >Create a new account</a>
     </form>
