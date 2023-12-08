@@ -40,7 +40,8 @@
     <br>
     <br>
     <br>
-    <h2>Comments:</h2>
+    <button id="toggleButton" class="button2">Hide/ show reviews</button>
+    <section id="hiddenSection">
     <br>
     {% for review in reviews %}
             <p>{{ review.score }} / 10 ({{ review.author }}) : {{ review.comment }}</p>
@@ -48,7 +49,7 @@
         {% empty %}
         <p>There are no reviews yet.</p>
     {% endfor %}
-
+    </section>
     {% if user.is_authenticated %}
     {% if new_review %}
     <h2>Your review has been added.</h2>
@@ -90,6 +91,15 @@
         type: 'radar',
   data: data,
   options: {
+          scales: {
+        r: {
+            angleLines: {
+                display: true
+            },
+            suggestedMin: 0,
+            suggestedMax: 10
+        }
+    },
       plugins: {
           legend: {
               display: false
@@ -103,6 +113,16 @@
   },
 });
     </script>
+    <script>
+    document.getElementById('toggleButton').addEventListener('click', function() {
+      var hiddenSection = document.getElementById('hiddenSection');
+      if (hiddenSection.style.display === 'none') {
+        hiddenSection.style.display = 'block';
+      } else {
+        hiddenSection.style.display = 'none';
+      }
+    });
+  </script>
 
 {% endblock %}
 

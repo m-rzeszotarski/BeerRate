@@ -200,3 +200,7 @@ a.button3:hover{
 .form10 {
     width: 20%;
 }
+
+.hidden-section {
+      display: none;
+    }
