@@ -48,7 +48,7 @@ def beer_detail(request, pk):
 
     content_type = ContentType.objects.get_for_model(beer)
 
-    reviews = Review.objects.filter(content_type=content_type, object_pk=beer.pk, banned=False)
+    reviews = Review.objects.filter(content_type=content_type, object_pk=beer.pk)
     # Only not banned reviews are considered
 
     new_review = None
@@ -203,7 +203,7 @@ def mybeer_detail(request, pk):
 
     content_type = ContentType.objects.get_for_model(mybeer)
 
-    reviews = Review.objects.filter(content_type=content_type, object_pk=mybeer.pk, banned=False)
+    reviews = Review.objects.filter(content_type=content_type, object_pk=mybeer.pk)
     # Only not banned reviews are considered
 
     new_review = None
@@ -437,3 +437,35 @@ def order_delayed(request, pk):
 def order_status(request):
     orders = Order.objects.filter(author=request.user)
     return render(request, 'webpage/order_status.html', {'orders': orders})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def review_ban(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    review.banned = True
+    review.save()
+
+    if review.content_type == ContentType.objects.get_for_model(Beer):
+        beer = get_object_or_404(Beer, pk=review.object_pk)
+        return redirect('beer_detail', pk=beer.pk)
+    elif review.content_type == ContentType.objects.get_for_model(MyBeer):
+        mybeer = get_object_or_404(MyBeer, pk=review.object_pk)
+        return redirect('mybeer_detail', pk=mybeer.pk)
+    else:
+        return render(request, 'webpage/home.html', {})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def review_unban(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    review.banned = False
+    review.save()
+
+    if review.content_type == ContentType.objects.get_for_model(Beer):
+        beer = get_object_or_404(Beer, pk=review.object_pk)
+        return redirect('beer_detail', pk=beer.pk)
+    elif review.content_type == ContentType.objects.get_for_model(MyBeer):
+        mybeer = get_object_or_404(MyBeer, pk=review.object_pk)
+        return redirect('mybeer_detail', pk=mybeer.pk)
+    else:
+        return render(request, 'webpage/home.html', {})
