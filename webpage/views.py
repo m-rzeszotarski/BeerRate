@@ -303,8 +303,13 @@ def make_order(request):
             # cart_items created to help calculate order.price
             cart_items = CartItem.objects.filter(user=request.user)
             order.price = sum(item.product.price * item.quantity for item in cart_items)
-            # 25PLN for shipping added to order.price
-            order.price += 25
+            # Add shipping charge
+            if order.shipping == 'dpd':
+                order.price += 25
+            elif order.shipping =='inpost':
+                order.price += 15
+            elif order.shipping == 'poczta':
+                order.price += 35
             # Products (Query Set) in cart converted into the string
             order.product = str(CartItem.objects.filter(user=request.user))
             # Stripping string from Query Set specific elements
