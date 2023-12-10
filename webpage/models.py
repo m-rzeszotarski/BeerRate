@@ -46,15 +46,15 @@ class BeerMain(models.Model):
     class Meta:
         abstract = True
 
-    # Function that returns calculated average from users rating of beer or mybeer
-    def reviews_avg_score(self):
+    # Function that returns calculated average 'value' (score, hop, malt etc.) from users rating of beer or mybeer
+    def reviews_avg(self, value):
         # Filter - only reviews of selected beer are considered,
         # then aggregation and usage of Avg which calculates average
         content_type = ContentType.objects.get_for_model(self)
         reviews = Review.objects.filter(
             content_type=content_type,
             object_pk=self.pk
-        ).aggregate(average=Avg('score'))
+        ).aggregate(average=Avg(value))
         avg = 0
         if reviews["average"] is not None:
             # round - rounding the number up to 1 decimal place
@@ -73,68 +73,6 @@ class BeerMain(models.Model):
         if reviews["count"] is not None:
             counter = int(reviews["count"])
         return counter
-
-    # Average hop score in reviews of beer or mybeer
-    def reviews_avg_hop(self):
-        content_type = ContentType.objects.get_for_model(self)
-        reviews = Review.objects.filter(
-            content_type=content_type,
-            object_pk=self.pk
-        ).aggregate(average=Avg('hop'))
-        avg = 0
-        if reviews["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(reviews["average"]), 1)
-        return avg
-
-    # Average malt score in reviews of beer or mybeer
-    def reviews_avg_malt(self):
-        content_type = ContentType.objects.get_for_model(self)
-        reviews = Review.objects.filter(
-            content_type=content_type,
-            object_pk=self.pk
-        ).aggregate(average=Avg('malt'))
-        avg = 0
-        if reviews["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(reviews["average"]), 1)
-        return avg
-
-    def reviews_avg_roast(self):
-        content_type = ContentType.objects.get_for_model(self)
-        reviews = Review.objects.filter(
-            content_type=content_type,
-            object_pk=self.pk
-        ).aggregate(average=Avg('roast'))
-        avg = 0
-        if reviews["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(reviews["average"]), 1)
-        return avg
-
-    def reviews_avg_smoke(self):
-        content_type = ContentType.objects.get_for_model(self)
-        reviews = Review.objects.filter(
-            content_type=content_type,
-            object_pk=self.pk
-        ).aggregate(average=Avg('smoke'))
-        avg = 0
-        if reviews["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(reviews["average"]), 1)
-        return avg
-
-    def reviews_avg_fruit(self):
-        content_type = ContentType.objects.get_for_model(self)
-        reviews = Review.objects.filter(
-            content_type=content_type,
-            object_pk=self.pk
-        ).aggregate(average=Avg('fruit'))
-        avg = 0
-        if reviews["average"] is not None:
-            # round - rounding the number up to 1 decimal place
-            avg = round(float(reviews["average"]), 1)
-        return avg
 
 
 # Beer model (rating app) - inheriting from MainBeer model
