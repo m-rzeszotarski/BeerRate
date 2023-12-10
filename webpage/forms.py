@@ -34,7 +34,7 @@ class BeerForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
 
-# Form for creation of the new review (rating and comment about beer existing in the database)
+# Form for creation of the new review (rating and comment about Beer or MyBeer existing in the database)
 class ReviewForm(forms.ModelForm):
 
     class Meta:
@@ -78,6 +78,8 @@ class NewUserForm(UserCreationForm):
             user.save()
         return user
 
+
+# Form for creating new mybeers in ecommerce
 class MyBeerForm(forms.ModelForm):
 
     class Meta:
@@ -109,6 +111,8 @@ class MyBeerForm(forms.ModelForm):
         )
         self.helper.add_input(Submit('submit', 'Save'))
 
+
+# Form for creating new order in ecommerce
 class OrderForm(forms.ModelForm):
 
     class Meta:
