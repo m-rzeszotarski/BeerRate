@@ -10,6 +10,7 @@ from django.conf import settings
 from paypal.standard.forms import PayPalPaymentsForm
 from django.contrib.contenttypes.models import ContentType
 
+
 # @login_required - decorator allowing only logged-in users to use it
 # @user_passes_test - decorator allowing superuser only to use it
 # @csrf_exempt used to avoid Django expecting a CSRF token (used for paypal integration purpose)
@@ -40,22 +41,26 @@ def beer_list(request):
     return render(request, 'webpage/beer_list.html', {'beers': beers})
 
 
-# View showing details of chosen beer
-def beer_detail(request, pk):
-    beer = get_object_or_404(Beer, pk=pk)
+# This is a view for displaying a details of beers and mybeers (beer_detail.html and mybeer_detail.html)
+# request, model - Beer or MyBeer, template_name - 'webpage/beer_detail.html' or 'webpage/mybeer_detail.html', pk
+def detail(request, model, template_name, pk):
+    # get beer or mybeer
+    product = get_object_or_404(model, pk=pk)
 
     # chart_labels and chart_data are used by Chart.js
     chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
-    chart_data = [beer.reviews_avg('hop'),
-                  beer.reviews_avg('malt'),
-                  beer.reviews_avg('roast'),
-                  beer.reviews_avg('smoke'),
-                  beer.reviews_avg('fruit')]
 
-    content_type = ContentType.objects.get_for_model(beer)
+    # average from users rating
+    chart_data = [product.reviews_avg('hop'),
+                  product.reviews_avg('malt'),
+                  product.reviews_avg('roast'),
+                  product.reviews_avg('smoke'),
+                  product.reviews_avg('fruit')]
 
+    # It is necessary to get ContentType because Review use GenericForeignKey
+    content_type = ContentType.objects.get_for_model(product)
     # Filter reviews to get reviews of selected beer
-    reviews = Review.objects.filter(content_type=content_type, object_pk=beer.pk)
+    reviews = Review.objects.filter(content_type=content_type, object_pk=product.pk)
 
     new_review = None
 
@@ -63,32 +68,47 @@ def beer_detail(request, pk):
     if request.method == "POST":
         review_form = ReviewForm(request.POST)
         if review_form.is_valid():
-            content_type = ContentType.objects.get_for_model(beer)
             # filtering reviews for selected beer and logged user
             old_review = reviews.filter(author=request.user)
             # counting number of reviews for selected beer created by logged user
-            old_review_count = old_review.count()
             # if number of review is greater than 0 script deletes old review
-            # (only one review can be created by one user)
-            if old_review_count > 0:
+            if old_review.count() > 0:
                 old_review.delete()
             # Create Review object but don't save to database yet
             new_review = review_form.save(commit=False)
             # Assign the current content_type (beer) and pk to the review
             new_review.content_type = content_type
-            new_review.object_pk = beer.pk
+            new_review.object_pk = product.pk
             # Assign logged username to 'author' field
             new_review.author = request.user
             # Save the review to the database
             new_review.save()
     else:
         review_form = ReviewForm()
-    return render(request, 'webpage/beer_detail.html', {'beer': beer,
-                                                        'chart_labels': chart_labels,
-                                                        'chart_data': chart_data,
-                                                        'reviews': reviews,
-                                                        'new_review': new_review,
-                                                        'review_form': review_form})
+
+    context = {
+        'chart_labels': chart_labels,
+        'chart_data': chart_data,
+        'reviews': reviews,
+        'new_review': new_review,
+        'review_form': review_form,
+    }
+
+    # Render depends on model type
+    if model == Beer:
+        context['beer'] = product
+    elif model == MyBeer:
+        context['mybeer'] = product
+
+    return render(request, template_name, context)
+
+
+def beer_detail(request, pk):
+    return detail(request, Beer, 'webpage/beer_detail.html', pk)
+
+
+def mybeer_detail(request, pk):
+    return detail(request, MyBeer, 'webpage/mybeer_detail.html', pk)
 
 
 # view for creating a new beer
@@ -125,14 +145,39 @@ def beer_edit(request, pk):
     return render(request, 'webpage/beer_edit.html', {'form': form})
 
 
+# view for handling removing beers and mybeers
+@user_passes_test(lambda u: u.is_superuser)
+def object_remove(request, model, template_name, pk):
+    product = get_object_or_404(model, pk=pk)
+    # Deletes all reviews for beers and mybeers
+    if model == Beer or model == MyBeer:
+        product.reviews.all().delete()
+    product.delete()
+    return redirect(template_name)
+
+
 # view for removing beer
 @user_passes_test(lambda u: u.is_superuser)
 def beer_remove(request, pk):
-    beer = get_object_or_404(Beer, pk=pk)
-    # deletes all reviews for selected beer
-    beer.reviews.all().delete()
-    beer.delete()
-    return redirect('beer_list')
+    return object_remove(request, Beer, 'beer_list', pk)
+
+
+# view for removing mybeer
+@user_passes_test(lambda u: u.is_superuser)
+def mybeer_remove(request, pk):
+    return object_remove(request, MyBeer, 'mybeer_list', pk)
+
+
+# view for removing chosen products from cart
+@login_required
+def remove_from_cart(request, pk):
+    return object_remove(request, CartItem, 'view_cart', pk)
+
+
+# View for removing orders
+@user_passes_test(lambda u: u.is_superuser)
+def order_remove(request, pk):
+    return object_remove(request, Order, 'order_list', pk)
 
 
 # beer have to be approved by superuser before it will be shown in beer_list.html page
@@ -174,15 +219,6 @@ def mybeer_edit(request, pk):
     return render(request, 'webpage/mybeer_edit.html', {'form': form})
 
 
-# view for removing mybeers (ecommerce)
-@user_passes_test(lambda u: u.is_superuser)
-def mybeer_remove(request, pk):
-    mybeer = get_object_or_404(MyBeer, pk=pk)
-    mybeer.reviews.all().delete()
-    mybeer.delete()
-    return redirect('mybeer_list')
-
-
 # view for creating my beers (ecommerce)
 @user_passes_test(lambda u: u.is_superuser)
 def mybeer_new(request):
@@ -197,56 +233,6 @@ def mybeer_new(request):
     else:
         form = MyBeerForm()
     return render(request, 'webpage/mybeer_edit.html', {'form': form})
-
-
-# view showing details of chosen my beer (ecommerce)
-def mybeer_detail(request, pk):
-    mybeer = get_object_or_404(MyBeer, pk=pk)
-
-    chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
-    chart_data = [mybeer.reviews_avg('hop'),
-                  mybeer.reviews_avg('malt'),
-                  mybeer.reviews_avg('roast'),
-                  mybeer.reviews_avg('smoke'),
-                  mybeer.reviews_avg('fruit')]
-
-    content_type = ContentType.objects.get_for_model(mybeer)
-
-    reviews = Review.objects.filter(content_type=content_type, object_pk=mybeer.pk)
-    # Only not banned reviews are considered
-
-    new_review = None
-
-    # creating new review
-    if request.method == "POST":
-        review_form = ReviewForm(request.POST)
-        if review_form.is_valid():
-            content_type = ContentType.objects.get_for_model(mybeer)
-            # filtering reviews for selected beer and logged user
-            old_review = reviews.filter(content_type=content_type, object_pk=mybeer.pk, author=request.user)
-            # counting number of review for selected beer created by logged user
-            old_review_count = old_review.count()
-            # if number of review is greater than 0 script deletes old review
-            # (only one review can be created by one user)
-            if old_review_count > 0:
-                old_review.delete()
-            # Create Review object but don't save to database yet
-            new_review = review_form.save(commit=False)
-            # Assign the current beer to the review
-            new_review.content_type = content_type
-            new_review.object_pk = mybeer.pk
-            # Assign logged username to 'author' field
-            new_review.author = request.user
-            # Save the review to the database
-            new_review.save()
-    else:
-        review_form = ReviewForm()
-    return render(request, 'webpage/mybeer_detail.html', {'mybeer': mybeer,
-                                                          'chart_labels': chart_labels,
-                                                          'chart_data': chart_data,
-                                                          'reviews': reviews,
-                                                          'new_review': new_review,
-                                                          'review_form': review_form})
 
 
 # view showing items in cart (ecommerce)
@@ -267,14 +253,6 @@ def add_to_cart(request, pk):
 
     cart_item.quantity += 1
     cart_item.save()
-    return redirect('view_cart')
-
-
-# view for removing chosen products from cart
-@login_required
-def remove_from_cart(request, pk):
-    cart_item = CartItem.objects.get(pk=pk)
-    cart_item.delete()
     return redirect('view_cart')
 
 
@@ -399,55 +377,11 @@ def order_list(request):
     return render(request, 'webpage/order_list.html', {'orders': orders})
 
 
-# View for removing orders
+# View for changing order status
 @user_passes_test(lambda u: u.is_superuser)
-def order_remove(request, pk):
+def order_status_change(request, pk, status):
     order = get_object_or_404(Order, pk=pk)
-    order.delete()
-    return redirect('order_list')
-
-
-# View for changing order status to 'pending'
-@user_passes_test(lambda u: u.is_superuser)
-def order_pending(request, pk):
-    order = Order.objects.get(pk=pk)
-    order.status = 'Pending'
-    order.save()
-    return redirect('order_list')
-
-
-# view for changing order status to 'shipped'
-@user_passes_test(lambda u: u.is_superuser)
-def order_shipped(request, pk):
-    order = Order.objects.get(pk=pk)
-    order.status = 'Shipped'
-    order.save()
-    return redirect('order_list')
-
-
-# view for changing order status to 'cancelled' (user also can cancel the order)
-@login_required
-def order_cancelled(request, pk):
-    order = Order.objects.get(pk=pk)
-    order.status = 'Cancelled'
-    order.save()
-    return redirect('order_list')
-
-
-# view for changing order status to 'completed'
-@user_passes_test(lambda u: u.is_superuser)
-def order_completed(request, pk):
-    order = Order.objects.get(pk=pk)
-    order.status = 'Completed'
-    order.save()
-    return redirect('order_list')
-
-
-# view for changing order status to 'delayed'
-@user_passes_test(lambda u: u.is_superuser)
-def order_delayed(request, pk):
-    order = Order.objects.get(pk=pk)
-    order.status = 'Delayed'
+    order.status = status
     order.save()
     return redirect('order_list')
 
