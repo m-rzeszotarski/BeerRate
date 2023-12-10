@@ -31,7 +31,7 @@ class BeerForm(forms.ModelForm):
             Field('blg', css_class="form10"),
             Field('picture', css_class="form50"),
         )
-        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.add_input(Submit('submit', 'Save', css_class='button3'))
 
 
 # Form for creation of the new review (rating and comment about Beer or MyBeer existing in the database)
@@ -109,7 +109,7 @@ class MyBeerForm(forms.ModelForm):
             Field('additives', css_class="form50"),
             Field('price', css_class="form10"),
         )
-        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.add_input(Submit('submit', 'Save', css_class='button3'))
 
 
 # Form for creating new order in ecommerce
