@@ -6,15 +6,10 @@
 {% crispy example_form example_form.helper %}
 
 {% block content %}
-    <h2>New mybeer</h2>
-    <br>
-    <form action="." method="POST">
-    {{ form|crispy }}
-    {% csrf_token %}
-    <input id="submit1" type="submit" value="login" style="display: none" />
-        <!-- By label I hide ugly submit button and replace it with mine -->
-        <label for="submit1" class="button3">
-            Save
-        </label>
+    <h2>New beer</h2>
+    <br/>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        {% crispy form %}
     </form>
 {% endblock %}
