@@ -10,12 +10,17 @@ from django.conf import settings
 from paypal.standard.forms import PayPalPaymentsForm
 from django.contrib.contenttypes.models import ContentType
 
+# @login_required - decorator allowing only logged-in users to use it
+# @user_passes_test - decorator allowing superuser only to use it
+# @csrf_exempt used to avoid Django expecting a CSRF token (used for paypal integration purpose)
 
+
+# Home page
 def home(request):
     return render(request, 'webpage/home.html', {})
 
 
-# view for new user registration
+# View for new user registration
 def register_request(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
@@ -29,16 +34,17 @@ def register_request(request):
     return render(request, "registration/register.html", {"register_form": form})
 
 
-# view showing all beers
+# View showing all beers
 def beer_list(request):
     beers = Beer.objects.all()
     return render(request, 'webpage/beer_list.html', {'beers': beers})
 
 
-# view showing details of chosen beer
+# View showing details of chosen beer
 def beer_detail(request, pk):
     beer = get_object_or_404(Beer, pk=pk)
 
+    # chart_labels and chart_data are used by Chart.js
     chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
     chart_data = [beer.reviews_avg_hop(),
                   beer.reviews_avg_malt(),
@@ -48,8 +54,8 @@ def beer_detail(request, pk):
 
     content_type = ContentType.objects.get_for_model(beer)
 
+    # Filter reviews to get reviews of selected beer
     reviews = Review.objects.filter(content_type=content_type, object_pk=beer.pk)
-    # Only not banned reviews are considered
 
     new_review = None
 
@@ -59,8 +65,8 @@ def beer_detail(request, pk):
         if review_form.is_valid():
             content_type = ContentType.objects.get_for_model(beer)
             # filtering reviews for selected beer and logged user
-            old_review = Review.objects.filter(content_type=content_type, object_pk=beer.pk, author=request.user)
-            # counting number of review for selected beer created by logged user
+            old_review = reviews.objects.filter(author=request.user)
+            # counting number of reviews for selected beer created by logged user
             old_review_count = old_review.count()
             # if number of review is greater than 0 script deletes old review
             # (only one review can be created by one user)
@@ -68,7 +74,7 @@ def beer_detail(request, pk):
                 old_review.delete()
             # Create Review object but don't save to database yet
             new_review = review_form.save(commit=False)
-            # Assign the current beer to the review
+            # Assign the current content_type (beer) and pk to the review
             new_review.content_type = content_type
             new_review.object_pk = beer.pk
             # Assign logged username to 'author' field
@@ -85,7 +91,7 @@ def beer_detail(request, pk):
                                                         'review_form': review_form})
 
 
-# view for new beer - @login_required - decorator allowing only logged-in users to use it
+# view for creating a new beer
 @login_required
 def beer_new(request):
     if request.method == "POST":
@@ -109,6 +115,7 @@ def beer_edit(request, pk):
         form = BeerForm(request.POST, instance=beer)
         if form.is_valid():
             beer = form.save(commit=False)
+            # updates author field
             beer.author = str(request.user)
             beer.published_date = timezone.now()
             beer.save()
@@ -118,37 +125,39 @@ def beer_edit(request, pk):
     return render(request, 'webpage/beer_edit.html', {'form': form})
 
 
-# view for removing beer - @user_passes_test - decorator allowing superuser only to use it
+# view for removing beer
 @user_passes_test(lambda u: u.is_superuser)
 def beer_remove(request, pk):
     beer = get_object_or_404(Beer, pk=pk)
+    # deletes all reviews for selected beer
     beer.reviews.all().delete()
     beer.delete()
     return redirect('beer_list')
 
 
-# beer have to be approved by superuser before it will be shown in beer_list page
+# beer have to be approved by superuser before it will be shown in beer_list.html page
 @user_passes_test(lambda u: u.is_superuser)
 def beer_approve(request, pk):
     beer = get_object_or_404(Beer, pk=pk)
+    # Uses function built-in class
     beer.approve()
     return redirect('beer_list')
 
 
-# view listing beers in approve_list.html
+# view listing beers (used in approve_list.html)
 @user_passes_test(lambda u: u.is_superuser)
 def approve_list(request):
     beers = Beer.objects.all()
     return render(request, 'webpage/approve_list.html', {'beers': beers})
 
 
-# view listing mybeers (shop)
+# view listing mybeers (ecommerce)
 def mybeer_list(request):
     mybeers = MyBeer.objects.all()
     return render(request, 'webpage/mybeer_list.html', {'mybeers': mybeers})
 
 
-# view for editing mybeers (shop)
+# view for editing mybeers (ecommerce)
 @user_passes_test(lambda u: u.is_superuser)
 def mybeer_edit(request, pk):
     mybeer = get_object_or_404(MyBeer, pk=pk)
@@ -165,7 +174,7 @@ def mybeer_edit(request, pk):
     return render(request, 'webpage/mybeer_edit.html', {'form': form})
 
 
-# view for removing mybeers (shop)
+# view for removing mybeers (ecommerce)
 @user_passes_test(lambda u: u.is_superuser)
 def mybeer_remove(request, pk):
     mybeer = get_object_or_404(MyBeer, pk=pk)
@@ -174,7 +183,7 @@ def mybeer_remove(request, pk):
     return redirect('mybeer_list')
 
 
-# view for creating my beers (shop)
+# view for creating my beers (ecommerce)
 @user_passes_test(lambda u: u.is_superuser)
 def mybeer_new(request):
     if request.method == "POST":
@@ -190,7 +199,7 @@ def mybeer_new(request):
     return render(request, 'webpage/mybeer_edit.html', {'form': form})
 
 
-# view showing details of chosen my beer (shop)
+# view showing details of chosen my beer (ecommerce)
 def mybeer_detail(request, pk):
     mybeer = get_object_or_404(MyBeer, pk=pk)
 
@@ -240,7 +249,7 @@ def mybeer_detail(request, pk):
                                                           'review_form': review_form})
 
 
-# view showing items in cart (shop)
+# view showing items in cart (ecommerce)
 @login_required
 def view_cart(request):
     # Cart is showing products added by logged-in user
@@ -250,7 +259,7 @@ def view_cart(request):
     return render(request, 'webpage/cart.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
-# view for adding products into the cart (shop)
+# view for adding mybeers into the cart (mybeer -> cart_item) (ecommerce)
 @login_required
 def add_to_cart(request, pk):
     product = MyBeer.objects.get(pk=pk)
@@ -291,7 +300,7 @@ def decrease_cart_item(request, pk):
     return redirect('view_cart')
 
 
-# view for making new order in shop
+# view for making a new order in shop
 @login_required
 def make_order(request):
     if request.method == "POST":
@@ -327,21 +336,27 @@ def make_order(request):
     return render(request, 'webpage/order_edit.html', {'form': form})
 
 
+# View for payment page (django-paypal integration)
 def payment_process(request):
     order_pk = request.session.get('order_pk')
     order = get_object_or_404(Order, pk=order_pk)
     host = request.get_host()
 
     paypal_dict = {
+        # My paypal email (from settings.py)
         "business": settings.PAYPAL_RECEIVER_EMAIL,
+        # Price that paypal will charge
         "amount": str(order.price),
+        # Ordered products
         "item_name": str(Order.product),
+        # Invoice number - for now I left the order number
         "invoice": str(order.pk),
+        # Currency for paypal
         "currency_code": 'PLN',
+        # Redirect user to paypal payment if successful -> payment_done.html if not payment_canceled.html
         "notify_url": 'http://{}{}'.format(host, reverse('paypal-ipn')),
         "return": 'http://{}{}'.format(host, reverse('payment_done')),
         "cancel_return": request.build_absolute_uri(reverse('payment_canceled')),
-        "custom": "premium_plan",  # Custom command to correlate to some function later (optional)
     }
 
     form = PayPalPaymentsForm(initial=paypal_dict)
@@ -349,20 +364,19 @@ def payment_process(request):
                                                             'form': form})
 
 
-# view showing the order detail - @csrf_exempt used to avoid Django expecting a CSRF token
-# since PayPal can redirect the user to this view by POST
+# View for completed payment
 @csrf_exempt
 def payment_done(request):
     return render(request, 'webpage/payment_done.html')
 
 
+# View for not completed payment
 @csrf_exempt
 def payment_canceled(request):
     return render(request, 'webpage/payment_canceled.html')
 
 
-# view for editing the order
-
+# View for editing the order
 def order_edit(request, pk):
     order = get_object_or_404(Order, pk=pk)
     if request.method == "POST":
@@ -378,14 +392,14 @@ def order_edit(request, pk):
     return render(request, 'webpage/order_edit.html', {'form': form})
 
 
-# view showing all orders in database (superuser only)
+# View showing all orders in database
 @user_passes_test(lambda u: u.is_superuser)
 def order_list(request):
     orders = Order.objects.all()
     return render(request, 'webpage/order_list.html', {'orders': orders})
 
 
-# view for removing orders
+# View for removing orders
 @user_passes_test(lambda u: u.is_superuser)
 def order_remove(request, pk):
     order = get_object_or_404(Order, pk=pk)
@@ -393,7 +407,7 @@ def order_remove(request, pk):
     return redirect('order_list')
 
 
-# view for changing order status to 'pending'
+# View for changing order status to 'pending'
 @user_passes_test(lambda u: u.is_superuser)
 def order_pending(request, pk):
     order = Order.objects.get(pk=pk)
@@ -444,6 +458,9 @@ def order_status(request):
     return render(request, 'webpage/order_status.html', {'orders': orders})
 
 
+# View for handling banning or unbanning reviews
+# Because of usage of GenericForeignKey content_type must be differentiated (beer or mybeer)
+# Also depending on content_type user is redirected to different pages
 @user_passes_test(lambda u: u.is_superuser)
 def handle_review_ban(request, review, is_banned):
     review.banned = is_banned
@@ -455,12 +472,14 @@ def handle_review_ban(request, review, is_banned):
         return redirect('mybeer_detail', pk=review.object_pk)
 
 
+# View for banning reviews
 @user_passes_test(lambda u: u.is_superuser)
 def review_ban(request, pk):
     review = get_object_or_404(Review, pk=pk)
     return handle_review_ban(request, review, is_banned=True)
 
 
+# View for unbanning reviews
 @user_passes_test(lambda u: u.is_superuser)
 def review_unban(request, pk):
     review = get_object_or_404(Review, pk=pk)
