@@ -23,11 +23,11 @@
         <p><b>Date:</b> {{ order.date }}</p>
         <p><b>Status:</b> {{ order.status }}
         <br>
-        <a href="{% url 'order_cancelled' pk=order.pk %}" class="button2">Cancel</a>
-        <a href="{% url 'order_pending' pk=order.pk %}" class="button2">Pending</a>
-        <a href="{% url 'order_shipped' pk=order.pk %}" class="button2">Shipped</a>
-        <a href="{% url 'order_completed' pk=order.pk %}" class="button2">Complete</a>
-        <a href="{% url 'order_delayed' pk=order.pk %}" class="button2">Delay</a>
+        <a href="{% url 'order_status_change' pk=order.pk status='Canceled' %}" class="button2">Cancel</a>
+        <a href="{% url 'order_status_change' pk=order.pk status='Pending' %}" class="button2">Pending</a>
+        <a href="{% url 'order_status_change' pk=order.pk status='Shipped' %}" class="button2">Shipped</a>
+        <a href="{% url 'order_status_change' pk=order.pk status='Complete' %}" class="button2">Complete</a>
+        <a href="{% url 'order_status_change' pk=order.pk status='Delayed' %}" class="button2">Delay</a>
         <a href="{% url 'order_remove' pk=order.pk %}" class="button2">Remove</a>
         <br>
     {% endfor %}
