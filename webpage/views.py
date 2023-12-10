@@ -46,11 +46,11 @@ def beer_detail(request, pk):
 
     # chart_labels and chart_data are used by Chart.js
     chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
-    chart_data = [beer.reviews_avg_hop(),
-                  beer.reviews_avg_malt(),
-                  beer.reviews_avg_roast(),
-                  beer.reviews_avg_smoke(),
-                  beer.reviews_avg_fruit()]
+    chart_data = [beer.reviews_avg('hop'),
+                  beer.reviews_avg('malt'),
+                  beer.reviews_avg('roast'),
+                  beer.reviews_avg('smoke'),
+                  beer.reviews_avg('fruit')]
 
     content_type = ContentType.objects.get_for_model(beer)
 
@@ -204,11 +204,11 @@ def mybeer_detail(request, pk):
     mybeer = get_object_or_404(MyBeer, pk=pk)
 
     chart_labels = ['Hop', 'Malt', 'Roast', 'Smoke', 'Fruit']
-    chart_data = [mybeer.reviews_avg_hop(),
-                  mybeer.reviews_avg_malt(),
-                  mybeer.reviews_avg_roast(),
-                  mybeer.reviews_avg_smoke(),
-                  mybeer.reviews_avg_fruit()]
+    chart_data = [mybeer.reviews_avg('hop'),
+                  mybeer.reviews_avg('malt'),
+                  mybeer.reviews_avg('roast'),
+                  mybeer.reviews_avg('smoke'),
+                  mybeer.reviews_avg('fruit')]
 
     content_type = ContentType.objects.get_for_model(mybeer)
 
