@@ -65,7 +65,7 @@ def beer_detail(request, pk):
         if review_form.is_valid():
             content_type = ContentType.objects.get_for_model(beer)
             # filtering reviews for selected beer and logged user
-            old_review = reviews.objects.filter(author=request.user)
+            old_review = reviews.filter(author=request.user)
             # counting number of reviews for selected beer created by logged user
             old_review_count = old_review.count()
             # if number of review is greater than 0 script deletes old review
@@ -223,7 +223,7 @@ def mybeer_detail(request, pk):
         if review_form.is_valid():
             content_type = ContentType.objects.get_for_model(mybeer)
             # filtering reviews for selected beer and logged user
-            old_review = Review.objects.filter(content_type=content_type, object_pk=mybeer.pk, author=request.user)
+            old_review = reviews.filter(content_type=content_type, object_pk=mybeer.pk, author=request.user)
             # counting number of review for selected beer created by logged user
             old_review_count = old_review.count()
             # if number of review is greater than 0 script deletes old review
