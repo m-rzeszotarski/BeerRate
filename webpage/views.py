@@ -35,12 +35,6 @@ def register_request(request):
     return render(request, "registration/register.html", {"register_form": form})
 
 
-# View showing all beers
-def beer_list(request):
-    beers = Beer.objects.all()
-    return render(request, 'webpage/beer_list.html', {'beers': beers})
-
-
 # This is a view for displaying a details of beers and mybeers (beer_detail.html and mybeer_detail.html)
 # request, model - Beer or MyBeer, template_name - 'webpage/beer_detail.html' or 'webpage/mybeer_detail.html', pk
 def detail(request, model, template_name, pk):
@@ -111,38 +105,65 @@ def mybeer_detail(request, pk):
     return detail(request, MyBeer, 'webpage/mybeer_detail.html', pk)
 
 
-# view for creating a new beer
+# View showing all beers
+def beer_list(request):
+    beers = Beer.objects.all()
+    return render(request, 'webpage/beer_list.html', {'beers': beers})
+
+
+# view listing mybeers (ecommerce)
+def mybeer_list(request):
+    mybeers = MyBeer.objects.all()
+    return render(request, 'webpage/mybeer_list.html', {'mybeers': mybeers})
+
+
+# View handling creating and editing beers and mybeers
 @login_required
-def beer_new(request):
-    if request.method == "POST":
-        form = BeerForm(request.POST)
-        if form.is_valid():
-            beer = form.save(commit=False)
-            beer.author = request.user
-            beer.published_date = timezone.now()
-            beer.save()
-            return redirect('beer_detail', pk=beer.pk)
+def object_edit(request, model, template_edit, template_detail, pk):
+    if pk is None:
+        beer = None
     else:
-        form = BeerForm()
-    return render(request, 'webpage/beer_edit.html', {'form': form})
+        beer = get_object_or_404(model, pk=pk)
 
+    if model == Beer:
+        template_form = BeerForm
+    else:
+        template_form = MyBeerForm
 
-# view for editing existing beer
-@login_required
-def beer_edit(request, pk):
-    beer = get_object_or_404(Beer, pk=pk)
-    if request.method == "POST":
-        form = BeerForm(request.POST, instance=beer)
+    if request.method == 'POST':
+        form = template_form(request.POST, instance=beer)
         if form.is_valid():
             beer = form.save(commit=False)
             # updates author field
             beer.author = str(request.user)
             beer.published_date = timezone.now()
             beer.save()
-            return redirect('beer_detail', pk=beer.pk)
+            return redirect(template_detail, pk=beer.pk)
     else:
-        form = BeerForm(instance=beer)
-    return render(request, 'webpage/beer_edit.html', {'form': form})
+        form = template_form(instance=beer)
+    return render(request, template_edit, {'form': form})
+
+
+# View for editing beers
+def beer_edit(request, pk):
+    return object_edit(request, Beer, 'webpage/beer_edit.html', 'beer_detail', pk)
+
+
+# View for editing mybeers
+def mybeer_edit(request, pk):
+    return object_edit(request, MyBeer, 'webpage/mybeer_edit.html', 'mybeer_detail', pk)
+
+
+# view for creating a new beer
+@login_required
+def beer_new(request):
+    return object_edit(request, Beer, 'webpage/beer_edit.html', 'beer_detail', None)
+
+
+# View for creating a new mybeer
+@login_required
+def mybeer_new(request):
+    return object_edit(request, MyBeer, 'webpage/mybeer_edit.html', 'mybeer_detail', None)
 
 
 # view for handling removing beers and mybeers
@@ -194,45 +215,6 @@ def beer_approve(request, pk):
 def approve_list(request):
     beers = Beer.objects.all()
     return render(request, 'webpage/approve_list.html', {'beers': beers})
-
-
-# view listing mybeers (ecommerce)
-def mybeer_list(request):
-    mybeers = MyBeer.objects.all()
-    return render(request, 'webpage/mybeer_list.html', {'mybeers': mybeers})
-
-
-# view for editing mybeers (ecommerce)
-@user_passes_test(lambda u: u.is_superuser)
-def mybeer_edit(request, pk):
-    mybeer = get_object_or_404(MyBeer, pk=pk)
-    if request.method == "POST":
-        form = MyBeerForm(request.POST, instance=mybeer)
-        if form.is_valid():
-            mybeer = form.save(commit=False)
-            mybeer.author = str(request.user)
-            mybeer.published_date = timezone.now()
-            mybeer.save()
-            return redirect('mybeer_detail', pk=mybeer.pk)
-    else:
-        form = MyBeerForm(instance=mybeer)
-    return render(request, 'webpage/mybeer_edit.html', {'form': form})
-
-
-# view for creating my beers (ecommerce)
-@user_passes_test(lambda u: u.is_superuser)
-def mybeer_new(request):
-    if request.method == "POST":
-        form = MyBeerForm(request.POST)
-        if form.is_valid():
-            mybeer = form.save(commit=False)
-            mybeer.author = request.user
-            mybeer.published_date = timezone.now()
-            mybeer.save()
-            return redirect('mybeer_detail', pk=mybeer.pk)
-    else:
-        form = MyBeerForm()
-    return render(request, 'webpage/mybeer_edit.html', {'form': form})
 
 
 # view showing items in cart (ecommerce)
