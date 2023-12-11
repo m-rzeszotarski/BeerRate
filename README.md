@@ -24,8 +24,9 @@ Class-Based Views are implemented in **BeerMain**:
 - **reviews_counter(self)**, which counts the number of reviews for a specific beer.
 
 Function-Based Views:
-detail
-handle review
+- **def detail(request, model, template_name, pk)** - this view supports two models (**Beer** and **MyBeer**) and is called by two different views: **def beer_detail** or **def mybeer_detail** (depending where it is used). It returns a two lists that are utilized for chart creation, reviews of selected beer and a form for review creation.
+- **def object_remove(request, model, template_name, pk)** - this view is used to handle removing: Beer, MyBeer, CartItem and Order. It gets an object depending on its model and pk, and deletes it. If it is a Beer or MyBeer it also removes all Reviews created for it.
+- **def handle_review_ban(request, review, is_banned)** - this view is used to handle banning a comments and it is called by **def review_ban(request, pk)** or **def review_unban(request, pk)** (which get a selected review by its pk) depending what superuser wants to do
 
 ## Beer Rating Classes
 
@@ -44,15 +45,6 @@ The **MyBeer** class represents items available in the shop (it is also inheriti
 ## E-commerce Functions
 
 From **home.html**, users can access the shop **mybeer_list.html**, and superusers can view a page displaying all created orders **order_list** (and change their status using dedicated function). In the shop **mybeer_list.html**, logged-in users can add beers to the cart. Superusers can also add new MyBeers using a form. In the cart **cart.html**, users can change the quantity of chosen items or remove them. The total price is calculated by multiplying the quantity of items in the cart by their price. If a user wants to make an order, they are redirected to a form where they must fill in their personal data. Products in cart are found by filtering CartItems by the user. The order price is calculated using the same principle as in the cart, but also shipping charges are added. After saving the order form, items from the cart are deleted and user is rediracted to the PayPal page. 
-
-## Plans for improvement
-
-- Add the possibility to fill in purchaser's data in the user tab; this data will be used by default in the order form.
-- Include multiple shipping options.
-- Implement a function to ban reviews (boolean is present but lacks a function for changing it).
-- Remove autoscale from charts and make y in range 0 - 10
-​- Enhance access restriction and security measures.
-- Modify page: mybeer_list, mybeer_detail
 
 
 
