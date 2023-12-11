@@ -43,7 +43,7 @@ From **home.html**, users can access Beer Ranking, and superusers can view the l
 
 The **MyBeer** class represents items available in the shop (it is also inheriting from **BeerMain** abstract class). For cart purposes, the **CartItem** class was created, where each CartItem is assigned to a specific MyBeer from the shop and a user by a **ForeignKey**. To complete a final order, the **Order** class was introduced, containing purchaser's data, products, price, and status.
 
-## E-commerce Functions
+## E-commerce Views
 
 From **home.html**, users can access the shop **mybeer_list.html**, and superusers can view a page displaying all created orders **order_list** (and change their status using dedicated function). In the shop **mybeer_list.html**, logged-in users can add beers to the cart. Superusers can also add new MyBeers using a form. In the cart **cart.html**, users can change the quantity of chosen items or remove them. The total price is calculated by multiplying the quantity of items in the cart by their price.  If a user wishes to place an order, they are redirected to a form where they provide their personal data. The products in the cart are identified by filtering CartItems associated with the user. TThe order price follows the same principle as in the cart, with shipping charges added. After saving the order form, items from the cart are deleted and user is rediracted to the PayPal page. 
 
