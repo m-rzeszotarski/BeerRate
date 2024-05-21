@@ -2,6 +2,7 @@
 
 This application is designed to serve two functions: an e-commerce platform featuring beers brewed by myself and a service for users to rate beers.
 I didn't want to divide the application into two separate entities, so both the store and the beer rating functionalities are integrated into a single 'webpage' application.
+The webpage might look a bit old and raw, but I chose not to use any ready-made Bootstrap templates or similar options.
 
 ## Packages
 
