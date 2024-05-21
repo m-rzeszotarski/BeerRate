@@ -15,8 +15,8 @@ Several additional packages were utilized for this project:
 
 ## Main Classes
 
-The primary model in the application is the **BeerMain** model. This abstrat class was created as beers in the e-commerce section have different variables compared to the rating app. **Beer** (model for rating) and **MyBeer** (model for e-commerce) are inheriting form BeerMain class. 
-The second crucial class is **Review**, created to enable users to rate and review beers. Reviews can be applied to both **Beer** and **MyBeer** models, and a **GenericForeignKey** is used to assign reviews based on the model (**ContentType**) and database position (**PrimaryKey**). Superusers have the ability to ban a review by toggling the **banned** boolean (False to True). Each user is restricted to adding only one review per beer (the view checks whether the review was created by a given user for a given object).
+The primary model in the application is the **BeerMain** model. This abstrat class was created as beers in the e-commerce section have different variables compared to the rating app. **Beer** (model for rating) and **MyBeer** (model for my beers in e-commerce) are inheriting form BeerMain class. 
+The second crucial class is **Review**, created to enable users to rate and review beers. Reviews can be applied to both **Beer** and **MyBeer** models, and a **GenericForeignKey** is used to assign reviews based on the model (**ContentType**) and database position (**PrimaryKey**). Superusers have the ability to ban a review by toggling the **banned** boolean (False to True). Each user is restricted to adding only one review per beer (the function checks whether the review was created by a given user for a given object).
 
 ## Main Views
 
@@ -26,7 +26,7 @@ Class-Based Views implemented in **BeerMain**:
 
 Function-Based Views:
 - **def detail(request, model, template_name, pk)**: This view supports two models (**Beer** and **MyBeer**) and is called by two different views: **def beer_detail** or **def mybeer_detail** (depending where it is used). It returns a two lists that are utilized for chart creation, reviews of selected beer and a form for review creation.
-- **def object_remove(request, model, template_name, pk)**: This view is used to handle removing instances of: Beer, MyBeer, CartItem and Order. It gets an object depending on its model and pk, and deletes it. If the object is a Beer or MyBeer, it also removes all associated reviews.
+- **def object_remove(request, model, template_name, pk)**: This view is used to handle removing instances of: Beer, MyBeer, CartItem and Order (this two classes will be explained later). It gets an object depending on its model and pk, and deletes it. If the object is a Beer or MyBeer, it also removes all associated reviews.
 - **def handle_review_ban(request, review, is_banned)** - this view is used to handle banning a comments and it is called by **def review_ban(request, pk)** or **def review_unban(request, pk)** (depending on the superuser's intent).
 
 ## Beer Rating Classes
