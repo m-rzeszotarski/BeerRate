@@ -61,6 +61,32 @@ class BeerMain(models.Model):
             avg = round(float(reviews["average"]), 1)
         return avg
 
+    # Django don't allow passing arguments to function in html, so I created this functions to calculate averages for
+    # all parameters
+    @property
+    def reviews_avg_score(self):
+        return self.reviews_avg('score')
+
+    @property
+    def reviews_avg_hop(self):
+        return self.reviews_avg('hop')
+
+    @property
+    def reviews_avg_malt(self):
+        return self.reviews_avg('malt')
+
+    @property
+    def reviews_avg_roast(self):
+        return self.reviews_avg('roast')
+
+    @property
+    def reviews_avg_smoke(self):
+        return self.reviews_avg('smoke')
+
+    @property
+    def reviews_avg_fruit(self):
+        return self.reviews_avg('fruit')
+
     # Function that returns the total number of reviews (ratings) for beer or mybeer
     # The same principle as in previous function
     def reviews_counter(self):
