@@ -4,17 +4,29 @@
 {%  extends 'webpage/base.html' %}
 
 {% block content %}
-    <div class='page'>
-        <a href="{% url 'beer_list' %}" class="button1">Beer Ranking</a>
-        <br/>
-        <a href={% url 'mybeer_list' %} class="button1">Buy our Beers</a>
-        <br/>
-        <br/>
-        <br/>
-        <a href="https://pl.linkedin.com/in/michal-rzeszotarski" class="button1">My LinkedIn</a>
-        <br/>
-        <a href="https://github.com/m-rzeszotarski" class="button1">My GitHub</a>
-        <br/>
+{% load static %}
+
+    <div class="row">
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Beer Ranking</title><rect width="100%" height="100%" fill="cornsilk"></rect><image href="{% static 'img/podium.svg' %}" x="15%" y="15%" width="70%" height="70%" /></svg>
+        <h2 class="fw-normal">Beer Ranking</h2>
+        <p>Discover unexplored flavors and help others discover them too.</p>
+        <p><a class="button1" href="{% url 'beer_list' %}">View ranking »</a></p>
+      </div>
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Buy Beers</title><rect width="100%" height="100%" fill="cornsilk"></rect><image href="{% static 'img/shop.svg' %}" x="15%" y="23%" width="70%" height="70%" /></svg>
+        <h2 class="fw-normal">Buy our Beers</h2>
+        <p>Discover our amazing beers, brewed with passion and love.</p>
+        <p><a class="button1" href="{% url 'mybeer_list' %}">View shop »</a></p>
+      </div>
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Github</title><rect width="100%" height="100%" fill="cornsilk"></rect><image href="{% static 'img/github.svg' %}" x="10%" y="15%" width="80%" height="80%" /></svg>
+        <h2 class="fw-normal">My Github</h2>
+        <p>Let's get to know each other better. Discover my other projects.</p>
+        <p><a class="button1" href="https://github.com/m-rzeszotarski">View my Github »</a></p>
+      </div>
+    </div>
+    <br/>
         {% if user.is_superuser %}
             <br/>
             <br/>
@@ -23,5 +35,5 @@
             <br>
             <a href="{% url 'order_list' %}" class="button1">Manage orders</a>
         {% endif %}
-    </div>
+
 {% endblock %}
